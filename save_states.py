@@ -17,4 +17,4 @@ def load_game():
         return state
     except FileNotFoundError:
         print("No saved game found!")
-        return None
+        return False
