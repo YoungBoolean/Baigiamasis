@@ -7,6 +7,7 @@ from ui.constants import FPS
 from ui.settings_menu import settings_menu
 from game import start
 from save_states import load_game
+from ui.utilities import calculate_position
 
 
 def game_menu(screen, clock, settings, background_manager, background_manager_loading):
@@ -17,6 +18,8 @@ def game_menu(screen, clock, settings, background_manager, background_manager_lo
         load_possible = True
     else:
         load_possible = False
+
+    start_btn_x, start_btn_y = calculate_position(screen_width, screen_height, 0.5, 0.3)
 
     start_btn = Button((screen_width - Button.get_button_size()[0]) / 2,
                        screen_height - Button.get_button_size()[1] * (4.5 if load_possible else 3),

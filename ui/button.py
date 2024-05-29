@@ -3,10 +3,16 @@ from ui.constants import FONT_PATH, BUTTON_FILE_PATH, TEXT_FONT_PATH
 
 
 class Button:
-    def __init__(self, x, y, text='', max_font_size=24, scroll=False,
+    def __init__(self, x, y,
+                 text='',
+                 max_font_size=24,
+                 scroll=False,
                  button_text_box_size=(0, 0),
-                 button_text_padding=120, button_file_path='resources/menu_button.png',
-                 font_path=FONT_PATH, button_size=(300, 50), text_color=(255, 255, 255)):
+                 button_text_padding=120,
+                 button_file_path='resources/menu_button.png',
+                 font_path=FONT_PATH,
+                 button_size=(300, 50),
+                 text_color=(255, 255, 255)):
         self.text_color = text_color
         self.button_size = button_size
         self.button_text_box_size = button_text_box_size
