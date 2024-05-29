@@ -37,4 +37,7 @@ class BackgroundManager:
         screen.blit(self.images, (0, 0))
 
     def draw_background(self, screen):
-        screen.blit(self.images[self.current_frame], (0, 0))
+        try:
+            screen.blit(self.images[self.current_frame], (0, 0))
+        except:
+            screen.blit(self.images, (0, 0))

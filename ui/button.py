@@ -23,6 +23,7 @@ class Button:
         self.scroll_button_size = (20, 400)
         self.hover_button_file_counter = 1
         self.animation_done = False
+        self.go_back = False
 
     @classmethod
     def get_button_size(cls, button_size=(300, 50)):
@@ -36,7 +37,7 @@ class Button:
         text_surf = self.font.render(self.text, True, self.text_color)
 
         # Decrease font size until the text fits the button width
-        while text_surf.get_width() > self.rect.width - self.button_text_padding:  # 20 pixels of padding
+        while text_surf.get_width() > self.rect.width - self.button_text_padding:
             font_size -= 1
             self.font = pygame.font.Font(FONT_PATH, font_size)
             text_surf = self.font.render(self.text, True, self.text_color)
@@ -67,11 +68,18 @@ class Button:
             hover_image_load = pygame.image.load(BUTTON_FILE_PATH + filename).convert_alpha()
             hover_image = pygame.transform.scale(hover_image_load, self.button_size)
             screen.blit(hover_image, self.rect)
-            self.hover_button_file_counter += 1
+            if not self.go_back:
+                self.hover_button_file_counter += 1
             screen.blit(self.text_surf, self.text_rect)
             if repeat:
-                if self.hover_button_file_counter >= max_hover_button_file_index:
-                    self.hover_button_file_counter = 1
+                if self.go_back:
+                    if self.hover_button_file_counter > 1:
+                        self.hover_button_file_counter -= 1
+                    else:
+                        self.go_back = False
+                if not self.go_back:
+                    if self.hover_button_file_counter >= max_hover_button_file_index:
+                        self.go_back = True
 
     def text_box_appear(self, screen, file_path='resources/text_button/', max_index=14):
         if not self.animation_done:
