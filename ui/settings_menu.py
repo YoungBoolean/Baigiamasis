@@ -48,14 +48,15 @@ def settings_menu(screen, clock, settings, background_manager, background_manage
             if fullscreen_btn.is_clicked(event):
                 settings.toggle_fullscreen()
                 update_screen_mode(screen, settings, background_manager)
+                update_screen_mode(screen, settings, background_manager_loading)
                 background_manager.update_screen_size(settings.current_resolution)
                 background_manager_loading.update_screen_size(settings.current_resolution)
                 fullscreen_btn.update_text('Windowed' if settings.fullscreen else 'Fullscreen')
             if back_btn.is_clicked(event):
                 return
 
-        background_manager.update_background()
-        background_manager.draw_background(screen)
+        background_manager_loading.update_background_slideshow()
+        background_manager_loading.draw_background(screen)
         resolution_btn.draw(screen)
         resolution_btn.check_hover(screen)
         fullscreen_btn.draw(screen)

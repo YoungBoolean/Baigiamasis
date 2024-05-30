@@ -54,7 +54,7 @@ def game_menu(screen, clock, settings, background_manager, background_manager_lo
                     return
             if start_btn.is_clicked(event):
                 screen.fill((0, 0, 0))
-                start(screen, clock, settings, background_manager_loading)
+                start(screen, clock, settings, background_manager_loading, background_manager)
 
             if load_possible:
                 if load_btn.is_clicked(event):
@@ -62,14 +62,14 @@ def game_menu(screen, clock, settings, background_manager, background_manager_lo
                     game_state = loaded_state['game_state']
                     username = loaded_state.get('username')
                     screen.fill((0, 0, 0))
-                    start(screen, clock, settings, background_manager_loading, save_state=game_state,
+                    start(screen, clock, settings, background_manager_loading, background_manager, save_state=game_state,
                           player_name=username)
 
             if settings_btn.is_clicked(event):
                 settings_menu(screen, clock, settings, background_manager, background_manager_loading)
 
-        background_manager.update_background()
-        background_manager.draw_background(screen)
+        background_manager_loading.update_background_slideshow()
+        background_manager_loading.draw_background(screen)
 
         if load_possible:
             load_btn.draw(screen)

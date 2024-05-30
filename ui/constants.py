@@ -18,6 +18,7 @@ DARK_GREEN = (0, 200, 0)
 GRAY = (200, 200, 200)
 
 # Image paths
+BACKGROUND_PLACEHOLDER_IMAGE_PATH = 'resources/background/placeholder.jpg'
 BACKGROUND_IMAGE_PATH = 'resources/background/'
 first_list = [BACKGROUND_IMAGE_PATH + str(img) + '.jpg' for img in range(1, 42)]
 second_list = [BACKGROUND_IMAGE_PATH + str(img) + '.jpg' for img in range(40, 1, -1)]
@@ -37,8 +38,9 @@ CHARACTER_HEIGHT = 50
 
 # Map
 NON_WALKABLE_AREAS = [
-    pygame.Rect(10, 50, 10, 100),  # building 1
-    pygame.Rect(40, 20, 20, 10),  # building 2
+    pygame.Rect(56, 295, 68, 600),  # building 1
+    pygame.Rect(292, 274, 80, 600),  # building 2
+    pygame.Rect(529, 263, 75, 600),  # building 3
 ]
 
 

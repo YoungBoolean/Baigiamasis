@@ -2,13 +2,14 @@ import sys
 import pygame
 
 from ui.button import Button
-from ui.constants import FPS, GameState, TEXT_FONT_PATH
+from ui.constants import FPS, GameState, TEXT_FONT_PATH, LOADING_IMAGE_PATH_LIST
 from ui.user_input_box import InputBox
 from save_states import save_game, load_game
 from character.character import Character
 
 
-def start(screen, clock, settings, background_manager_loading, save_state=GameState.INPUT, player_name='Player'):
+def start(screen, clock, settings, background_manager_loading, background_manager,
+          save_state=GameState.LOADING_SCREEN_1, player_name='Player'):
     screen_width, screen_height = settings.current_resolution
     game_state = save_state
     user_name = player_name
@@ -58,8 +59,13 @@ def start(screen, clock, settings, background_manager_loading, save_state=GameSt
             screen.fill((0, 0, 0))
             # Update character position
             character.move(dx, dy)
-            background_manager_loading.change_and_draw_background('resources/main_map/day.jpg', screen)
+            background_manager.update_image_path('resources/main_map/day.jpg')
+            background_manager.draw_background(screen)
             character.draw(screen)
+            background_manager.update_image_path('resources/main_map/trees.png')
+            background_manager.draw_background(screen)
+            background_manager.update_image_path('resources/main_map/clouds1.png')
+            background_manager.move_from_left_to_right(screen)
             save_btn.draw(screen)
             load_btn.draw(screen)
             menu_btn.draw(screen)
@@ -88,6 +94,8 @@ def start(screen, clock, settings, background_manager_loading, save_state=GameSt
             if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 mouse_pos = pygame.mouse.get_pos()
                 print(mouse_pos)
+                if game_state == GameState.LOADING_SCREEN_1:
+                    game_state = GameState.INPUT
                 if game_state == GameState.MENU:
                     game_state = GameState.SCENE_1
                     text_btn.reset_animation()
@@ -108,40 +116,40 @@ def start(screen, clock, settings, background_manager_loading, save_state=GameSt
             username_ask_btn.text_box_appear(screen)
             username_input_box.update()
             username_input_box.draw(screen)
+        elif game_state == GameState.LOADING_SCREEN_1:
+            background_manager_loading.update_background_slideshow()
+            background_manager_loading.update_image_slideshow_path(LOADING_IMAGE_PATH_LIST)
+            background_manager_loading.draw_background(screen)
         elif game_state == GameState.MENU:
             player_name = username_input_box.username if username_input_box.username else player_name
-            background_manager_loading.change_and_draw_background('resources/main_map/night.jpg', screen)
+            background_manager.update_image_path('resources/main_map/night.jpg')
+            background_manager.draw_background(screen)
         elif game_state == GameState.SCENE_1:
             screen.fill((0, 0, 0))  # Clear the screen with black before drawing
-            background_manager_loading.change_and_draw_background('resources/main_map/night.jpg', screen)
+            background_manager.update_image_path('resources/main_map/night.jpg')
+            background_manager.draw_background(screen)
             text_btn.text_box_appear(screen)
             text_btn.update_text(f'Nice to meet you, {player_name}')
-            save_btn.draw(screen)
-            load_btn.draw(screen)
-            menu_btn.draw(screen)
         elif game_state == GameState.SCENE_2:
             screen.fill((0, 0, 0))
-            background_manager_loading.change_and_draw_background('resources/main_map/night.jpg', screen)
+            background_manager.update_image_path('resources/main_map/night.jpg')
+            background_manager.draw_background(screen)
             text_btn.text_box_appear(screen)
             text_btn.update_text('Enjoy! :)')
-            save_btn.draw(screen)
-            load_btn.draw(screen)
-            menu_btn.draw(screen)
         elif game_state == GameState.SCENE_3:
             screen.fill((0, 0, 0))
-            background_manager_loading.change_and_draw_background('resources/main_map/night.jpg', screen)
-            save_btn.draw(screen)
-            load_btn.draw(screen)
-            menu_btn.draw(screen)
+            background_manager.update_image_path('resources/main_map/night.jpg')
+            background_manager.draw_background(screen)
         elif game_state == GameState.SCENE_4:
             screen.fill((0, 0, 0))
-            background_manager_loading.change_and_draw_background('resources/main_map/day.jpg', screen)
+            background_manager.update_image_path('resources/main_map/day.jpg')
+            background_manager.draw_background(screen)
             text_btn.text_box_appear(screen)
             text_btn.update_text('Somewhere in a fictional town, fictional country.')
-            save_btn.draw(screen)
-            load_btn.draw(screen)
-            menu_btn.draw(screen)
 
+        save_btn.draw(screen)
+        load_btn.draw(screen)
+        menu_btn.draw(screen)
         save_btn.check_hover(screen)
         load_btn.check_hover(screen)
         menu_btn.check_hover(screen)
