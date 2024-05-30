@@ -37,7 +37,7 @@ CHARACTER_HEIGHT = 50
 
 # Map
 NON_WALKABLE_AREAS = [
-    pygame.Rect(10, 10, 20, 10),  # building 1
+    pygame.Rect(10, 50, 10, 100),  # building 1
     pygame.Rect(40, 20, 20, 10),  # building 2
 ]
 
