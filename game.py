@@ -5,6 +5,7 @@ from ui.button import Button
 from ui.constants import FPS, GameState, TEXT_FONT_PATH
 from ui.user_input_box import InputBox
 from save_states import save_game, load_game
+from character.character import Character
 
 
 def start(screen, clock, settings, background_manager_loading, save_state=GameState.INPUT, player_name='Player'):
@@ -37,14 +38,36 @@ def start(screen, clock, settings, background_manager_loading, save_state=GameSt
                       screen_height - Button.get_button_size((150, 25))[1] * 24,
                       'Menu', button_size=(150, 25), text_color=(20, 20, 20), button_text_padding=90,
                       button_file_path='resources/button_hover/14.png')
+    character = Character(screen_width // 2, screen_height // 2, screen_width, screen_height)
 
     running = True
     while running:
+        if game_state == GameState.WORLD_MOVEMENT:
+            keys = pygame.key.get_pressed()
+            dx, dy = 0, 0
+            if keys[pygame.K_LEFT]:
+                dx = -5  # Move left
+            if keys[pygame.K_RIGHT]:
+                dx = 5  # Move right
+            if keys[pygame.K_UP]:
+                dy = -5  # Move up
+            if keys[pygame.K_DOWN]:
+                dy = 5  # Move down
+
+            # Clear screen
+            screen.fill((0, 0, 0))
+            # Update character position
+            character.move(dx, dy)
+            background_manager_loading.change_and_draw_background('resources/main_map/day.jpg', screen)
+            character.draw(screen)
+            save_btn.draw(screen)
+            load_btn.draw(screen)
+            menu_btn.draw(screen)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            username_input_box.handle_event(event)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     return
@@ -57,6 +80,8 @@ def start(screen, clock, settings, background_manager_loading, save_state=GameSt
                     user_name = loaded_state.get('username')
             if menu_btn.is_clicked(event):
                 return
+            if game_state == GameState.INPUT:
+                username_input_box.handle_event(event)
             if event.type == pygame.KEYDOWN and (event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER):
                 if game_state == GameState.INPUT:
                     game_state = GameState.MENU
@@ -75,6 +100,8 @@ def start(screen, clock, settings, background_manager_loading, save_state=GameSt
                 elif game_state == GameState.SCENE_3:
                     game_state = GameState.SCENE_4
                     text_btn.reset_animation()
+                elif game_state == GameState.SCENE_4:
+                    game_state = GameState.WORLD_MOVEMENT
 
         if game_state == GameState.INPUT:
             screen.fill((200, 200, 200))

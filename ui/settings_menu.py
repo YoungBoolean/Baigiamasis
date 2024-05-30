@@ -4,20 +4,29 @@ import pygame
 
 from ui.button import Button
 from ui.constants import FPS
+from ui.utilities import calculate_position
 
 
 def settings_menu(screen, clock, settings, background_manager, background_manager_loading):
-    resolution_btn = Button((settings.current_resolution[0] - Button.get_button_size()[0]) / 2,
-                                settings.current_resolution[1] - Button.get_button_size()[1] * 5,
+    screen_width, screen_height = settings.current_resolution
+
+    def create_buttons():
+        resolution_btn_x, resolution_btn_y = calculate_position(screen_width, screen_height, 0.313,0.62)
+        resolution_btn = Button(resolution_btn_x,
+                                resolution_btn_y,
                                 f'{settings.current_resolution[0]} x {settings.current_resolution[1]}')
 
-    fullscreen_btn = Button((settings.current_resolution[0] - Button.get_button_size()[0]) / 2,
-                            settings.current_resolution[1] - Button.get_button_size()[1] * 3.5,
-                            'Windowed' if settings.fullscreen else 'Fullscreen')
+        fullscreen_btn_x, fullscreen_btn_y = calculate_position(screen_width, screen_height, 0.313,0.72)
+        fullscreen_btn = Button(fullscreen_btn_x,
+                                fullscreen_btn_y,
+                                'Windowed' if settings.fullscreen else 'Fullscreen')
+        back_btn_x, back_btn_y = calculate_position(screen_width, screen_height, 0.313, 0.82)
+        back_btn = Button(back_btn_x,
+                          back_btn_y,
+                          'Back')
+        return resolution_btn, fullscreen_btn, back_btn
 
-    back_btn = Button((settings.current_resolution[0] - Button.get_button_size()[0]) / 2,
-                      settings.current_resolution[1] - Button.get_button_size()[1] * 1.5,
-                      'Back')
+    resolution_btn, fullscreen_btn, back_btn = create_buttons()
 
     running = True
     while running:

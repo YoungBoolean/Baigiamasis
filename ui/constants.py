@@ -32,13 +32,13 @@ TEXT_FONT_PATH = 'resources/arial.ttf'
 
 # Character
 CHARACTER_SPEED = 5
-CHARACTER_WIDTH = 50
+CHARACTER_WIDTH = 30
 CHARACTER_HEIGHT = 50
 
 # Map
 NON_WALKABLE_AREAS = [
-    pygame.Rect(100, 100, 200, 100),  # Example building 1
-    pygame.Rect(400, 200, 200, 100),  # Example building 2
+    pygame.Rect(10, 10, 20, 10),  # building 1
+    pygame.Rect(40, 20, 20, 10),  # building 2
 ]
 
 
@@ -54,3 +54,4 @@ class GameState:
     SCENE_5 = 'SCENE 5'
     SCENE_6 = 'SCENE 6'
     SCENE_7 = 'SCENE 7'
+    WORLD_MOVEMENT = 'WORLD_MOVEMENT'
