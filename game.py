@@ -6,6 +6,7 @@ from ui.constants import FPS, GameState, TEXT_FONT_PATH, LOADING_IMAGE_PATH_LIST
 from ui.user_input_box import InputBox
 from save_states import save_game, load_game
 from character.character import Character
+from ui.utilities import when_character_in_specific_coords
 
 
 def start(screen, clock, settings, background_manager_loading, background_manager,
@@ -20,26 +21,44 @@ def start(screen, clock, settings, background_manager_loading, background_manage
 
     text_btn = Button((80 * width_scale),
                       (350 * height_scale),
-                      '', button_size=(652 * width_scale, 252 * height_scale), font_path=TEXT_FONT_PATH,
+                      '', button_size=(652 * width_scale, 252 * height_scale),
+                      font_path=TEXT_FONT_PATH,
                       text_color=(20, 20, 20),
                       button_text_padding=20)
-    username_input_box = InputBox((screen_width - Button.get_button_size((1550, 0))[0] / 2.6),
-                                  screen_height - Button.get_button_size((0, 100))[1] * 0.97, 300, 200)
-    username_ask_btn = Button((screen_width - Button.get_button_size((652, 252))[0] / 0.9),
-                              screen_height - Button.get_button_size((652, 252))[1] * 0.99,
-                              'Please enter your name:', button_size=(652, 252), font_path=TEXT_FONT_PATH,
-                              text_color=(20, 20, 20), button_text_padding=20)
-    save_btn = Button((screen_width - Button.get_button_size((150, 25))[0]),
-                      screen_height - Button.get_button_size((150, 25))[1] * 24,
-                      'Save game', button_size=(150, 25), text_color=(20, 20, 20), button_text_padding=20,
+    multi_text_btn = Button((110 * width_scale),
+                            (400 * height_scale),
+                            '', button_size=(652 * width_scale, 252 * height_scale),
+                            font_path=TEXT_FONT_PATH,
+                            text_color=(20, 20, 20),
+                            button_text_padding=20)
+    username_input_box = InputBox((240 * width_scale),
+                                  (515 * height_scale), 300, 200)
+    username_ask_btn = Button((80 * width_scale),
+                              (350 * height_scale),
+                              'Please enter your name:',
+                              button_size=(652 * width_scale, 252 * height_scale),
+                              font_path=TEXT_FONT_PATH,
+                              text_color=(20, 20, 20),
+                              button_text_padding=20)
+    save_btn = Button((650 * width_scale),
+                      (1 * height_scale),
+                      'Save game',
+                      button_size=(150 * width_scale, 25 * height_scale),
+                      text_color=(20, 20, 20),
+                      button_text_padding=20,
                       button_file_path='resources/button_hover/14.png')
-    load_btn = Button((screen_width - Button.get_button_size((150, 25))[0] / 0.5),
-                      screen_height - Button.get_button_size((150, 25))[1] * 24,
-                      'Load game', button_size=(150, 25), text_color=(20, 20, 20), button_text_padding=20,
+    load_btn = Button((500 * width_scale),
+                      (1 * height_scale),
+                      'Load game',
+                      button_size=(150 * width_scale, 25 * height_scale),
+                      text_color=(20, 20, 20),
+                      button_text_padding=20,
                       button_file_path='resources/button_hover/14.png')
-    menu_btn = Button((screen_width - Button.get_button_size((150, 25))[0] / 0.333),
-                      screen_height - Button.get_button_size((150, 25))[1] * 24,
-                      'Menu', button_size=(150, 25), text_color=(20, 20, 20), button_text_padding=90,
+    menu_btn = Button((350 * width_scale),
+                      (1 * height_scale),
+                      'Menu',
+                      button_size=(150 * width_scale, 25 * height_scale),
+                      text_color=(20, 20, 20), button_text_padding=90,
                       button_file_path='resources/button_hover/14.png')
     character = Character(screen_width // 2, screen_height // 2, screen_width, screen_height)
 
@@ -123,8 +142,9 @@ def start(screen, clock, settings, background_manager_loading, background_manage
             background_manager.update_image_path('resources/main_map/night.jpg')
             background_manager.draw_background(screen)
             text_btn.text_box_appear(screen)
-            text_btn.update_text('You can control your character with the arrow keys.\n'
-                                 'Hold "L_Shift" to sprint!')
+            text_btn.update_text('')
+            multi_text_btn.render_multiline_text('You can control your character with the arrow keys.\n'
+                                                 'Hold "L_Shift" to sprint!', (255, 40, 40), screen)
         elif game_state == GameState.SCENE_5:
             screen.fill((0, 0, 0))
             background_manager.update_image_path('resources/main_map/day.jpg')
@@ -163,9 +183,9 @@ def start(screen, clock, settings, background_manager_loading, background_manage
             background_manager.move_from_left_to_right(screen, settings)
 
             # if character moves to a specific coordinate
-            if (character.return_position()[0] > 480 * width_scale < 522 * width_scale and
-                    character.return_position()[1] > 103 * height_scale < 151 * height_scale):
-                print('zjbs')
+            if when_character_in_specific_coords(width_scale, height_scale,
+                                                 character, (400, 450), (100, 150)):
+                pass
 
         save_btn.draw(screen)
         load_btn.draw(screen)
