@@ -49,12 +49,16 @@ def game_menu(screen, clock, settings, background_manager, background_manager_lo
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     return
+
             if start_btn.is_clicked(event):
                 screen.fill((0, 0, 0))
                 start(screen, clock, settings, background_manager_loading, background_manager)
+                background_manager_loading.update_screen_size(settings.current_resolution)
+                background_manager_loading.update_background_slideshow()
 
             if load_possible:
                 if load_btn.is_clicked(event):

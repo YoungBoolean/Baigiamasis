@@ -9,7 +9,7 @@ class BackgroundManager:
         self.screen_size = screen_size
         self.slideshow = slideshow
         self.image_path = BACKGROUND_PLACEHOLDER_IMAGE_PATH
-        self.image_path_list=BACKGROUND_IMAGE_PATH_LIST
+        self.image_path_list = BACKGROUND_IMAGE_PATH_LIST
         if self.slideshow:
             self.images_slideshow = [self.load_and_scale_background(img_path, self.screen_size) for img_path in
                                      self.image_path_list]
@@ -33,12 +33,10 @@ class BackgroundManager:
         self.screen_size = new_screen_size
         self.images_slideshow = [self.load_and_scale_background(img_path, self.screen_size) for img_path in
                                  image_path_list]
+        self.frame_count = len(self.images_slideshow)
 
     def update_image_path(self, img_path):
         self.image_path = img_path
-
-    def update_image_slideshow_path(self, img_path_list):
-        self.image_path_list = img_path_list
 
     def update_background_slideshow(self):
         now = pygame.time.get_ticks()
@@ -46,10 +44,11 @@ class BackgroundManager:
             self.current_frame = (self.current_frame + 1) % self.frame_count
             self.last_update = now
 
-    def move_from_left_to_right(self, screen):
-        self.counter += 1
+    def move_from_left_to_right(self, screen, settings):
+        screen_width, screen_height = settings.current_resolution
+        self.counter += 2
         screen.blit(self.clouds_image, (self.counter, 0))
-        if self.counter == 900:
+        if self.counter == 900 + screen_width / 2:
             self.counter = -800
 
     def draw_background(self, screen):

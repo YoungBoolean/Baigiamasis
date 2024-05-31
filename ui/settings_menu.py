@@ -10,23 +10,19 @@ from ui.utilities import calculate_position
 def settings_menu(screen, clock, settings, background_manager, background_manager_loading):
     screen_width, screen_height = settings.current_resolution
 
-    def create_buttons():
-        resolution_btn_x, resolution_btn_y = calculate_position(screen_width, screen_height, 0.313,0.62)
-        resolution_btn = Button(resolution_btn_x,
-                                resolution_btn_y,
-                                f'{settings.current_resolution[0]} x {settings.current_resolution[1]}')
+    resolution_btn_x, resolution_btn_y = calculate_position(screen_width, screen_height, 0.313, 0.62)
+    resolution_btn = Button(resolution_btn_x,
+                            resolution_btn_y,
+                            f'{settings.current_resolution[0]} x {settings.current_resolution[1]}')
 
-        fullscreen_btn_x, fullscreen_btn_y = calculate_position(screen_width, screen_height, 0.313,0.72)
-        fullscreen_btn = Button(fullscreen_btn_x,
-                                fullscreen_btn_y,
-                                'Windowed' if settings.fullscreen else 'Fullscreen')
-        back_btn_x, back_btn_y = calculate_position(screen_width, screen_height, 0.313, 0.82)
-        back_btn = Button(back_btn_x,
-                          back_btn_y,
-                          'Back')
-        return resolution_btn, fullscreen_btn, back_btn
-
-    resolution_btn, fullscreen_btn, back_btn = create_buttons()
+    fullscreen_btn_x, fullscreen_btn_y = calculate_position(screen_width, screen_height, 0.313, 0.72)
+    fullscreen_btn = Button(fullscreen_btn_x,
+                            fullscreen_btn_y,
+                            'Windowed' if settings.fullscreen else 'Fullscreen')
+    back_btn_x, back_btn_y = calculate_position(screen_width, screen_height, 0.313, 0.82)
+    back_btn = Button(back_btn_x,
+                      back_btn_y,
+                      'Back')
 
     running = True
     while running:

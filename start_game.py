@@ -2,7 +2,7 @@ import pygame
 import os
 
 from ui.background_manager import BackgroundManager
-from ui.constants import GAME_VERSION, GAME_NAME, LOADING_IMAGE_PATH_LIST
+from ui.constants import GAME_VERSION, GAME_NAME
 from ui.game_menu import game_menu
 from settings import Settings
 

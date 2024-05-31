@@ -33,14 +33,22 @@ TEXT_FONT_PATH = 'resources/arial.ttf'
 
 # Character
 CHARACTER_SPEED = 5
-CHARACTER_WIDTH = 30
+CHARACTER_WIDTH = 25
 CHARACTER_HEIGHT = 50
+
+# Character sprite
+sprite_path = 'resources/character_assets/char_template'
+SPRITE_PATH_LIST = [sprite_path + str(img) + '.png' for img in range(1, 4)]
 
 # Map
 NON_WALKABLE_AREAS = [
     pygame.Rect(56, 295, 68, 600),  # building 1
     pygame.Rect(292, 274, 80, 600),  # building 2
     pygame.Rect(529, 263, 75, 600),  # building 3
+    pygame.Rect(691, 145, 28, 100),  # building 4
+    pygame.Rect(677, 2, 120, 63),  # building 5
+    pygame.Rect(735, 299, 65, 88),  # building 6
+    pygame.Rect(624, 80, 30, 70),  # building 7
 ]
 
 

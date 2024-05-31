@@ -1,5 +1,5 @@
 import pygame
-from ui.constants import FONT_PATH, BUTTON_FILE_PATH, TEXT_FONT_PATH
+from ui.constants import FONT_PATH, BUTTON_FILE_PATH
 
 
 class Button:
