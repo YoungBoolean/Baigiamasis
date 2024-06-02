@@ -1,5 +1,6 @@
 import sys
 import time
+from random import randint
 
 import pygame
 
@@ -73,11 +74,14 @@ def start(screen, clock, settings, background_manager_loading, background_manage
     choice_btn_3 = Button((260 * width_scale),
                           (320 * height_scale),
                           'Choice 3', text_color=(20, 20, 20))
+    choice_btn_4 = Button((260 * width_scale),
+                          (390 * height_scale),
+                          'Choice 3', text_color=(20, 20, 20))
 
     running = True
     while running:
+        random_number_generator = randint(1,10)
         choice_made = False
-
         if game_state == GameState.WORLD_MOVEMENT:
             keys = pygame.key.get_pressed()
             dx, dy = 0, 0
@@ -113,11 +117,16 @@ def start(screen, clock, settings, background_manager_loading, background_manage
             if when_character_in_specific_coords(width_scale,
                                                  height_scale,
                                                  character,
-                                                 (400, 450),
-                                                 (100, 150)):
-                pass
+                                                 (735, 770),
+                                                 (65, 100)):
+                game_state = GameState.STORE_SCENE_1
 
         for event in pygame.event.get():
+            # mouse coordinates printing
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                print("Mouse clicked at:", mouse_pos)
+
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
@@ -171,6 +180,48 @@ def start(screen, clock, settings, background_manager_loading, background_manage
                     text_btn.reset_animation()
                     choice_made = True
 
+            if game_state == GameState.KITCHEN_SCENE_4:
+                if choice_btn_1.is_clicked(event):
+                    game_state = GameState.KITCHEN_SCENE_5
+                    text_btn.reset_animation()
+                    choice_made = True
+                elif choice_btn_2.is_clicked(event):
+                    game_state = GameState.KITCHEN_SCENE_7
+                    text_btn.reset_animation()
+                    choice_made = True
+                elif choice_btn_3.is_clicked(event):
+                    game_state = GameState.LAIPTINE_SCENE_1
+                    text_btn.reset_animation()
+                    choice_made = True
+                elif choice_btn_4.is_clicked(event):
+                    game_state = GameState.BEDROOM_SCENE_4
+                    text_btn.reset_animation()
+                    choice_made = True
+
+            if game_state == GameState.NARVELIS_SCENE_7:
+                if choice_btn_1.is_clicked(event):
+                    game_state = GameState.NARVELIS_SCENE_15
+                    text_btn.reset_animation()
+                    choice_made = True
+                elif choice_btn_2.is_clicked(event):
+                    game_state = GameState.NARVELIS_SCENE_8
+                    text_btn.reset_animation()
+                    choice_made = True
+                elif choice_btn_3.is_clicked(event):
+                    game_state = GameState.WORLD_MOVEMENT
+                    text_btn.reset_animation()
+                    choice_made = True
+
+            if game_state == GameState.STORE_SCENE_6:
+                if choice_btn_1.is_clicked(event):
+                    game_state = GameState.STORE_SCENE_7
+                    text_btn.reset_animation()
+                    choice_made = True
+                elif choice_btn_2.is_clicked(event):
+                    game_state = GameState.WORLD_MOVEMENT
+                    text_btn.reset_animation()
+                    choice_made = True
+
             # Space or Mouse click events for advancing the game state
             if not choice_made and (event.type == pygame.MOUSEBUTTONDOWN or (
                     event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE)):
@@ -218,6 +269,107 @@ def start(screen, clock, settings, background_manager_loading, background_manage
                 elif game_state == GameState.GAME_OVER:
                     text_btn.reset_animation()
                     return
+                elif game_state == GameState.KITCHEN_SCENE_1:
+                    game_state = GameState.KITCHEN_SCENE_2
+                    text_btn.reset_animation()
+                elif game_state == GameState.KITCHEN_SCENE_2:
+                    game_state = GameState.KITCHEN_SCENE_3
+                    text_btn.reset_animation()
+                elif game_state == GameState.KITCHEN_SCENE_3:
+                    game_state = GameState.KITCHEN_SCENE_4
+                    text_btn.reset_animation()
+                elif game_state == GameState.KITCHEN_SCENE_5:
+                    game_state = GameState.KITCHEN_SCENE_6
+                    text_btn.reset_animation()
+                elif game_state == GameState.KITCHEN_SCENE_6:
+                    game_state = GameState.KITCHEN_SCENE_4
+                    text_btn.reset_animation()
+                elif game_state == GameState.KITCHEN_SCENE_7:
+                    game_state = GameState.KITCHEN_SCENE_8
+                    text_btn.reset_animation()
+                elif game_state == GameState.KITCHEN_SCENE_8:
+                    game_state = GameState.KITCHEN_SCENE_4
+                    text_btn.reset_animation()
+                elif game_state == GameState.LAIPTINE_SCENE_1:
+                    game_state = GameState.LAIPTINE_SCENE_2
+                    text_btn.reset_animation()
+                elif game_state == GameState.LAIPTINE_SCENE_2:
+                    if random_number_generator < 5:
+                        game_state = GameState.LAIPTINE_SCENE_3
+                    else:
+                        game_state = GameState.LAIPTINE_SCENE_4
+                    text_btn.reset_animation()
+                elif game_state == GameState.LAIPTINE_SCENE_3:
+                    game_state = GameState.NARVELIS_SCENE_1
+                    text_btn.reset_animation()
+                elif game_state == GameState.LAIPTINE_SCENE_4:
+                    game_state = GameState.LAIPTINE_SCENE_5
+                    text_btn.reset_animation()
+                elif game_state == GameState.LAIPTINE_SCENE_5:
+                    game_state = GameState.LAIPTINE_SCENE_6
+                    text_btn.reset_animation()
+                elif game_state == GameState.LAIPTINE_SCENE_6:
+                    game_state = GameState.NARVELIS_SCENE_1
+                    text_btn.reset_animation()
+                elif game_state == GameState.NARVELIS_SCENE_1:
+                    game_state = GameState.NARVELIS_SCENE_2
+                    text_btn.reset_animation()
+                elif game_state == GameState.NARVELIS_SCENE_1:
+                    game_state = GameState.NARVELIS_SCENE_2
+                    text_btn.reset_animation()
+                elif game_state == GameState.NARVELIS_SCENE_2:
+                    game_state = GameState.NARVELIS_SCENE_3
+                    text_btn.reset_animation()
+                elif game_state == GameState.NARVELIS_SCENE_3:
+                    game_state = GameState.NARVELIS_SCENE_4
+                    text_btn.reset_animation()
+                elif game_state == GameState.NARVELIS_SCENE_4:
+                    game_state = GameState.NARVELIS_SCENE_5
+                    text_btn.reset_animation()
+                elif game_state == GameState.NARVELIS_SCENE_5:
+                    game_state = GameState.NARVELIS_SCENE_6
+                    text_btn.reset_animation()
+                elif game_state == GameState.NARVELIS_SCENE_6:
+                    game_state = GameState.NARVELIS_SCENE_7
+                    text_btn.reset_animation()
+                elif game_state == GameState.NARVELIS_SCENE_8:
+                    game_state = GameState.NARVELIS_SCENE_9
+                    text_btn.reset_animation()
+                elif game_state == GameState.NARVELIS_SCENE_9:
+                    game_state = GameState.NARVELIS_SCENE_10
+                    text_btn.reset_animation()
+                elif game_state == GameState.NARVELIS_SCENE_10:
+                    game_state = GameState.NARVELIS_SCENE_7
+                elif game_state == GameState.NARVELIS_SCENE_11:
+                    game_state = GameState.NARVELIS_SCENE_12
+                elif game_state == GameState.NARVELIS_SCENE_13:
+                    game_state = GameState.NARVELIS_SCENE_14
+                elif game_state == GameState.NARVELIS_SCENE_15:
+                    game_state = GameState.NARVELIS_SCENE_16
+                elif game_state == GameState.NARVELIS_SCENE_16:
+                    game_state = GameState.NARVELIS_SCENE_17
+                elif game_state == GameState.NARVELIS_SCENE_17:
+                    game_state = GameState.NARVELIS_SCENE_18
+                elif game_state == GameState.NARVELIS_SCENE_18:
+                    game_state = GameState.NARVELIS_SCENE_19
+                elif game_state == GameState.NARVELIS_SCENE_19:
+                    game_state = GameState.NARVELIS_SCENE_20
+                elif game_state == GameState.NARVELIS_SCENE_20:
+                    game_state = GameState.NARVELIS_SCENE_21
+                elif game_state == GameState.NARVELIS_SCENE_21:
+                    game_state = GameState.NARVELIS_SCENE_22
+                elif game_state == GameState.NARVELIS_SCENE_22:
+                    game_state = GameState.NARVELIS_SCENE_7
+                elif game_state == GameState.STORE_SCENE_1:
+                    game_state = GameState.STORE_SCENE_2
+                elif game_state == GameState.STORE_SCENE_2:
+                    game_state = GameState.STORE_SCENE_3
+                elif game_state == GameState.STORE_SCENE_3:
+                    game_state = GameState.STORE_SCENE_4
+                elif game_state == GameState.STORE_SCENE_5:
+                    game_state = GameState.STORE_SCENE_6
+                elif game_state == GameState.STORE_SCENE_7:
+                    game_state = GameState.STORE_SCENE_8
 
 
         # Screen drawing based on game state
@@ -339,8 +491,346 @@ def start(screen, clock, settings, background_manager_loading, background_manage
             background_manager.draw_background(screen)
             background_manager.update_image_path('resources/scene_backgrounds/mom3.png')
             background_manager.draw_background(screen)
+        elif game_state == GameState.KITCHEN_SCENE_2:
             text_btn.text_box_appear(screen)
-            text_btn.update_text(story_text.get('HomeBalcony').get('story')[2])
+            multi_text_btn.render_multiline_text(story_text.get('HomeKitchen').get('story')[0], screen)
+        elif game_state == GameState.KITCHEN_SCENE_3:
+            text_btn.text_box_appear(screen)
+            multi_text_btn.render_multiline_text(story_text.get('HomeKitchen').get('story')[1], screen)
+        elif game_state == GameState.KITCHEN_SCENE_4:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/kitchen.jpg')
+            background_manager.draw_background(screen)
+            background_manager.update_image_path('resources/scene_backgrounds/mom2.png')
+            background_manager.draw_background(screen)
+            choice_btn_1.update_text(story_text.get('HomeKitchen').get('selection')[0])
+            choice_btn_2.update_text(story_text.get('HomeKitchen').get('selection')[1])
+            choice_btn_3.update_text(story_text.get('HomeKitchen').get('selection')[2])
+            choice_btn_4.update_text(story_text.get('HomeKitchen').get('selection')[3])
+            choice_btn_1.draw(screen)
+            choice_btn_1.check_hover(screen)
+            choice_btn_2.draw(screen)
+            choice_btn_2.check_hover(screen)
+            choice_btn_3.draw(screen)
+            choice_btn_3.check_hover(screen)
+            choice_btn_4.draw(screen)
+            choice_btn_4.check_hover(screen)
+        elif game_state == GameState.KITCHEN_SCENE_5:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/kitchen.jpg')
+            background_manager.draw_background(screen)
+            background_manager.update_image_path('resources/scene_backgrounds/mom3.png')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text(f"{user_name}: " + story_text.get('HomeKitchen').get('player')[0])
+        elif game_state == GameState.KITCHEN_SCENE_6:
+            text_btn.text_box_appear(screen)
+            text_btn.update_text("Mom: " + story_text.get('HomeKitchen').get('mom')[0])
+        elif game_state == GameState.KITCHEN_SCENE_7:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/fridge.jpg')
+            background_manager.draw_background(screen)
+        elif game_state == GameState.KITCHEN_SCENE_8:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/fridge.jpg')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text("")
+            multi_text_btn.render_multiline_text(story_text.get('HomeKitchen').get('story')[2], screen)
+        elif game_state == GameState.LAIPTINE_SCENE_1:
+            screen.fill((0, 0, 0))
+            text_btn.text_box_appear(screen)
+            text_btn.update_text("")
+            multi_text_btn.render_multiline_text(story_text.get('HomeLaiptine').get('story')[0], screen)
+        elif game_state == GameState.LAIPTINE_SCENE_2:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/stairwell.jpg')
+            background_manager.draw_background(screen)
+            background_manager.update_image_path('resources/scene_backgrounds/kaimynas.png')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text("")
+            multi_text_btn.render_multiline_text(story_text.get('HomeLaiptine').get('story')[1], screen)
+        elif game_state == GameState.LAIPTINE_SCENE_3:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/stairwell.jpg')
+            background_manager.draw_background(screen)
+            background_manager.update_image_path('resources/scene_backgrounds/kaimynas2.png')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text("")
+            multi_text_btn.render_multiline_text(story_text.get('HomeLaiptine').get('story')[2], screen)
+        elif game_state == GameState.LAIPTINE_SCENE_4:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/stairwell.jpg')
+            background_manager.draw_background(screen)
+            background_manager.update_image_path('resources/scene_backgrounds/kaimynas2.png')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text("")
+            multi_text_btn.render_multiline_text(story_text.get('HomeLaiptine').get('story')[3], screen)
+        elif game_state == GameState.LAIPTINE_SCENE_5:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/stairwell.jpg')
+            background_manager.draw_background(screen)
+            background_manager.update_image_path('resources/scene_backgrounds/kaimynas2.png')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text(f"{user_name}: " + story_text.get('HomeLaiptine').get('player')[0])
+        elif game_state == GameState.LAIPTINE_SCENE_6:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/stairwell.jpg')
+            background_manager.draw_background(screen)
+            background_manager.update_image_path('resources/scene_backgrounds/kaimynas.png')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text(f"Kaimynas: " + story_text.get('HomeLaiptine').get('kaimynas')[0])
+        elif game_state == GameState.NARVELIS_SCENE_1:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
+            background_manager.draw_background(screen)
+            background_manager.update_image_path('resources/scene_backgrounds/tupikas.png')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text(story_text.get('HomeNarvelis').get('story')[0])
+        elif game_state == GameState.NARVELIS_SCENE_2:
+            text_btn.text_box_appear(screen)
+            text_btn.update_text(story_text.get('HomeNarvelis').get('story')[1])
+        elif game_state == GameState.NARVELIS_SCENE_3:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
+            background_manager.draw_background(screen)
+            background_manager.update_image_path('resources/scene_backgrounds/tupikas2.png')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text(" ")
+            multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[2], screen)
+        elif game_state == GameState.NARVELIS_SCENE_4:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
+            background_manager.draw_background(screen)
+            background_manager.update_image_path('resources/scene_backgrounds/tupikas.png')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text(" ")
+            multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[3], screen)
+        elif game_state == GameState.NARVELIS_SCENE_5:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
+            background_manager.draw_background(screen)
+            background_manager.update_image_path('resources/scene_backgrounds/tupikas.png')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text(story_text.get('HomeNarvelis').get('story')[4])
+        elif game_state == GameState.NARVELIS_SCENE_6:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
+            background_manager.draw_background(screen)
+            background_manager.update_image_path('resources/scene_backgrounds/tupikas2.png')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text(story_text.get('HomeNarvelis').get('story')[5])
+        elif game_state == GameState.NARVELIS_SCENE_7:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
+            background_manager.draw_background(screen)
+            background_manager.update_image_path('resources/scene_backgrounds/tupikas.png')
+            background_manager.draw_background(screen)
+            choice_btn_1.update_text(story_text.get('HomeNarvelis').get('selection')[0])
+            choice_btn_2.update_text(story_text.get('HomeNarvelis').get('selection')[1])
+            choice_btn_3.update_text(story_text.get('HomeNarvelis').get('selection')[2])
+            choice_btn_1.draw(screen)
+            choice_btn_1.check_hover(screen)
+            choice_btn_2.draw(screen)
+            choice_btn_2.check_hover(screen)
+            choice_btn_3.draw(screen)
+            choice_btn_3.check_hover(screen)
+        elif game_state == GameState.NARVELIS_SCENE_8:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
+            background_manager.draw_background(screen)
+            background_manager.update_image_path('resources/scene_backgrounds/tupikas2.png')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text("")
+            multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[6], screen)
+        elif game_state == GameState.NARVELIS_SCENE_9:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
+            background_manager.draw_background(screen)
+            background_manager.update_image_path('resources/scene_backgrounds/tupikas.png')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text("")
+            multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[7], screen)
+        elif game_state == GameState.NARVELIS_SCENE_10:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
+            background_manager.draw_background(screen)
+            background_manager.update_image_path('resources/scene_backgrounds/tupikas.png')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text("")
+            multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[8], screen)
+        elif game_state == GameState.NARVELIS_SCENE_11:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
+            background_manager.draw_background(screen)
+            background_manager.update_image_path('resources/scene_backgrounds/tupikas.png')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text("")
+            multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[9], screen)
+        elif game_state == GameState.NARVELIS_SCENE_12:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
+            background_manager.draw_background(screen)
+            background_manager.update_image_path('resources/scene_backgrounds/tupikas.png')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text("")
+            multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[10], screen)
+        elif game_state == GameState.NARVELIS_SCENE_13:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
+            background_manager.draw_background(screen)
+            background_manager.update_image_path('resources/scene_backgrounds/tupikas.png')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text("")
+            multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[11], screen)
+        elif game_state == GameState.NARVELIS_SCENE_14:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
+            background_manager.draw_background(screen)
+            background_manager.update_image_path('resources/scene_backgrounds/tupikas2.png')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text("")
+            multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[12], screen)
+        elif game_state == GameState.NARVELIS_SCENE_15:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
+            background_manager.draw_background(screen)
+            background_manager.update_image_path('resources/scene_backgrounds/tupikas.png')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text("")
+            multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[13], screen)
+        elif game_state == GameState.NARVELIS_SCENE_16:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
+            background_manager.draw_background(screen)
+            background_manager.update_image_path('resources/scene_backgrounds/tupikas2.png')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text("")
+            multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[14], screen)
+        elif game_state == GameState.NARVELIS_SCENE_17:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/playground.jpg')
+            background_manager.draw_background(screen)
+        elif game_state == GameState.NARVELIS_SCENE_18:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/playground.jpg')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text("")
+            multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[15], screen)
+        elif game_state == GameState.NARVELIS_SCENE_19:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/playground.jpg')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text("")
+            multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[16], screen)
+        elif game_state == GameState.NARVELIS_SCENE_20:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/playground.jpg')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text("")
+            multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[17], screen)
+        elif game_state == GameState.NARVELIS_SCENE_21:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
+            background_manager.draw_background(screen)
+            background_manager.update_image_path('resources/scene_backgrounds/tupikas.png')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text("")
+            multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[18], screen)
+        elif game_state == GameState.NARVELIS_SCENE_22:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
+            background_manager.draw_background(screen)
+            background_manager.update_image_path('resources/scene_backgrounds/tupikas2.png')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text("")
+            multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[19], screen)
+        elif game_state == GameState.STORE_SCENE_1:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/store.jpg')
+            background_manager.draw_background(screen)
+            text_btn.update_text("")
+            multi_text_btn.render_multiline_text(story_text.get('Store').get('story')[0], screen)
+        elif game_state == GameState.STORE_SCENE_2:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/store.jpg')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text("")
+            multi_text_btn.render_multiline_text(story_text.get('Store').get('story')[1], screen)
+        elif game_state == GameState.STORE_SCENE_3:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/store.jpg')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text("")
+            multi_text_btn.render_multiline_text(story_text.get('Store').get('story')[2], screen)
+        elif game_state == GameState.STORE_SCENE_4:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/store.jpg')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text("")
+            multi_text_btn.render_multiline_text(story_text.get('Store').get('story')[3], screen)
+        elif game_state == GameState.STORE_SCENE_5:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/store_kasa.jpg')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text("")
+            multi_text_btn.render_multiline_text(story_text.get('Store').get('story')[4], screen)
+        elif game_state == GameState.STORE_SCENE_6:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/store_kasa.jpg')
+            background_manager.draw_background(screen)
+            choice_btn_1.update_text(story_text.get('Store').get('selection')[0])
+            choice_btn_2.update_text(story_text.get('Store').get('selection')[1])
+            choice_btn_1.draw(screen)
+            choice_btn_1.check_hover(screen)
+            choice_btn_2.draw(screen)
+            choice_btn_2.check_hover(screen)
+        elif game_state == GameState.STORE_SCENE_7:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/store_kasa.jpg')
+            background_manager.draw_background(screen)
+            background_manager.update_image_path('resources/scene_backgrounds/kasininke.png')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text("")
+            multi_text_btn.render_multiline_text(f"{user_name}: " + story_text.get('Store').get('player')[0], screen)
+        elif game_state == GameState.STORE_SCENE_8:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/store_kasa.jpg')
+            background_manager.draw_background(screen)
+            background_manager.update_image_path('resources/scene_backgrounds/kasininke.png')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text("")
+            multi_text_btn.render_multiline_text(story_text.get('Store').get('story')[5], screen)
 
 
 
@@ -357,8 +847,7 @@ def start(screen, clock, settings, background_manager_loading, background_manage
 
 
 
-
-        # Update the display
+        # Update the display, continously draw save, load, menu buttons and check their hovers
         save_btn.draw(screen)
         load_btn.draw(screen)
         menu_btn.draw(screen)
