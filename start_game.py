@@ -3,7 +3,7 @@ import os
 
 from ui.background_manager import BackgroundManager
 from ui.constants import GAME_VERSION, GAME_NAME
-from ui.game_menu import game_menu
+from ui.game_menu import GameMenu
 from settings import Settings
 
 # Initialize pygame
@@ -19,4 +19,4 @@ background_manager = BackgroundManager(screen.get_size(), slideshow=False)
 background_manager_loading = BackgroundManager(screen.get_size())
 
 if __name__ == '__main__':
-    game_menu(screen, clock, Settings(), background_manager, background_manager_loading)
+    GameMenu(screen, clock, Settings(), background_manager, background_manager_loading)

@@ -10,7 +10,7 @@ from ui.utilities import when_character_in_specific_coords
 
 
 def start(screen, clock, settings, background_manager_loading, background_manager,
-          save_state=GameState.LOADING_SCREEN_1, player_name='Player'):
+          save_state=GameState.LOADING_SCREEN, player_name='Player'):
     screen_width, screen_height = settings.current_resolution
     original_width, original_height = RESOLUTIONS[0]
     width_scale = screen_width / original_width
@@ -46,20 +46,20 @@ def start(screen, clock, settings, background_manager_loading, background_manage
                       button_size=(150 * width_scale, 25 * height_scale),
                       text_color=(20, 20, 20),
                       button_text_padding=20,
-                      button_file_path='resources/button_hover/14.png')
+                      button_file_path='resources/button/button_hover_animation/14.png')
     load_btn = Button((500 * width_scale),
                       (1 * height_scale),
                       'Load game',
                       button_size=(150 * width_scale, 25 * height_scale),
                       text_color=(20, 20, 20),
                       button_text_padding=20,
-                      button_file_path='resources/button_hover/14.png')
+                      button_file_path='resources/button/button_hover_animation/14.png')
     menu_btn = Button((350 * width_scale),
                       (1 * height_scale),
                       'Menu',
                       button_size=(150 * width_scale, 25 * height_scale),
                       text_color=(20, 20, 20), button_text_padding=90,
-                      button_file_path='resources/button_hover/14.png')
+                      button_file_path='resources/button/button_hover_animation/14.png')
     character = Character(screen_width // 2, screen_height // 2, screen_width, screen_height)
 
     running = True
@@ -80,40 +80,40 @@ def start(screen, clock, settings, background_manager_loading, background_manage
                     user_name = loaded_state.get('username')
             if menu_btn.is_clicked(event):
                 return
-            if game_state == GameState.INPUT:
+            if game_state == GameState.INTRO_INPUT:
                 username_input_box.handle_event(event)
             if event.type == pygame.KEYDOWN and (event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER):
-                if game_state == GameState.INPUT:
+                if game_state == GameState.INTRO_INPUT:
                     game_state = GameState.MENU
             if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 mouse_pos = pygame.mouse.get_pos()
                 print(mouse_pos)
-                if game_state == GameState.LOADING_SCREEN_1:
-                    game_state = GameState.INPUT
+                if game_state == GameState.LOADING_SCREEN:
+                    game_state = GameState.INTRO_INPUT
                 if game_state == GameState.MENU:
-                    game_state = GameState.SCENE_1
+                    game_state = GameState.INTRO_SCENE_1
                     text_btn.reset_animation()
-                elif game_state == GameState.SCENE_1:
-                    game_state = GameState.SCENE_2
+                elif game_state == GameState.INTRO_SCENE_1:
+                    game_state = GameState.INTRO_SCENE_2
                     text_btn.reset_animation()
-                elif game_state == GameState.SCENE_2:
-                    game_state = GameState.SCENE_3
+                elif game_state == GameState.INTRO_SCENE_2:
+                    game_state = GameState.INTRO_SCENE_3
                     text_btn.reset_animation()
-                elif game_state == GameState.SCENE_3:
-                    game_state = GameState.SCENE_4
+                elif game_state == GameState.INTRO_SCENE_3:
+                    game_state = GameState.INTRO_SCENE_4
                     text_btn.reset_animation()
-                elif game_state == GameState.SCENE_4:
-                    game_state = GameState.SCENE_5
+                elif game_state == GameState.INTRO_SCENE_4:
+                    game_state = GameState.INTRO_SCENE_5
                     text_btn.reset_animation()
-                elif game_state == GameState.SCENE_5:
+                elif game_state == GameState.INTRO_SCENE_5:
                     game_state = GameState.WORLD_MOVEMENT
 
-        if game_state == GameState.INPUT:
+        if game_state == GameState.INTRO_INPUT:
             screen.fill((200, 200, 200))
             username_ask_btn.text_box_appear(screen)
             username_input_box.update()
             username_input_box.draw(screen)
-        elif game_state == GameState.LOADING_SCREEN_1:
+        elif game_state == GameState.LOADING_SCREEN:
             background_manager_loading.update_screen_size(settings.current_resolution, LOADING_IMAGE_PATH_LIST)
             background_manager_loading.update_background_slideshow()
             background_manager_loading.draw_background(screen)
@@ -121,23 +121,23 @@ def start(screen, clock, settings, background_manager_loading, background_manage
             player_name = username_input_box.username if username_input_box.username else player_name
             background_manager.update_image_path('resources/main_map/night.jpg')
             background_manager.draw_background(screen)
-        elif game_state == GameState.SCENE_1:
+        elif game_state == GameState.INTRO_SCENE_1:
             screen.fill((0, 0, 0))  # Clear the screen with black before drawing
             background_manager.update_image_path('resources/main_map/night.jpg')
             background_manager.draw_background(screen)
             text_btn.text_box_appear(screen)
             text_btn.update_text(f'Nice to meet you, {player_name}')
-        elif game_state == GameState.SCENE_2:
+        elif game_state == GameState.INTRO_SCENE_2:
             screen.fill((0, 0, 0))
             background_manager.update_image_path('resources/main_map/night.jpg')
             background_manager.draw_background(screen)
             text_btn.text_box_appear(screen)
             text_btn.update_text('Enjoy! :)')
-        elif game_state == GameState.SCENE_3:
+        elif game_state == GameState.INTRO_SCENE_3:
             screen.fill((0, 0, 0))
             background_manager.update_image_path('resources/main_map/night.jpg')
             background_manager.draw_background(screen)
-        elif game_state == GameState.SCENE_4:
+        elif game_state == GameState.INTRO_SCENE_4:
             screen.fill((0, 0, 0))
             background_manager.update_image_path('resources/main_map/night.jpg')
             background_manager.draw_background(screen)
@@ -145,7 +145,7 @@ def start(screen, clock, settings, background_manager_loading, background_manage
             text_btn.update_text('')
             multi_text_btn.render_multiline_text('You can control your character with the arrow keys.\n'
                                                  'Hold "L_Shift" to sprint!', (255, 40, 40), screen)
-        elif game_state == GameState.SCENE_5:
+        elif game_state == GameState.INTRO_SCENE_5:
             screen.fill((0, 0, 0))
             background_manager.update_image_path('resources/main_map/day.jpg')
             background_manager.draw_background(screen)

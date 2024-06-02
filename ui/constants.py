@@ -8,7 +8,7 @@ USER_NAME = 'Player'
 
 # Game meta
 GAME_VERSION = '0.0.1'
-GAME_NAME = 'Sludge Faktorius'
+GAME_NAME = 'Koshmaras'
 
 # Colors
 WHITE = (255, 255, 255)
@@ -24,12 +24,12 @@ first_list = [BACKGROUND_IMAGE_PATH + str(img) + '.jpg' for img in range(1, 42)]
 second_list = [BACKGROUND_IMAGE_PATH + str(img) + '.jpg' for img in range(40, 1, -1)]
 BACKGROUND_IMAGE_PATH_LIST = first_list + second_list
 MAP_IMAGE_PATH = 'path/to/your/map_image.jpg'
-BUTTON_FILE_PATH = 'resources/button_hover/'
+BUTTON_FILE_PATH = 'resources/button/'
 LOADING_IMAGE_PATH_LIST = ['resources/loading_screens/' + str(img) + '.png' for img in range(1, 3 + 1)]
 
 # Fonts
-FONT_PATH = 'resources/pixel-azure-bonds.ttf'
-TEXT_FONT_PATH = 'resources/arial.ttf'
+FONT_PATH = 'resources/fonts/pixel-azure-bonds.ttf'
+TEXT_FONT_PATH = 'resources/fonts/arial.ttf'
 
 # Character
 CHARACTER_SPEED = 5
@@ -54,14 +54,14 @@ NON_WALKABLE_AREAS = [
 
 # Game states
 class GameState:
-    INPUT = 'INPUT'
+    INTRO_INPUT = 'INPUT'
     MENU = 'MENU'
-    LOADING_SCREEN_1 = 'LOADING_SCREEN'
-    SCENE_1 = 'SCENE 1'
-    SCENE_2 = 'SCENE 2'
-    SCENE_3 = 'SCENE 3'
-    SCENE_4 = 'SCENE 4'
-    SCENE_5 = 'SCENE 5'
-    SCENE_6 = 'SCENE 6'
-    SCENE_7 = 'SCENE 7'
+    LOADING_SCREEN = 'LOADING_SCREEN'
+    INTRO_SCENE_1 = 'INTRO_SCENE 1'
+    INTRO_SCENE_2 = 'INTRO_SCENE 2'
+    INTRO_SCENE_3 = 'INTRO_SCENE 3'
+    INTRO_SCENE_4 = 'INTRO_SCENE 4'
+    INTRO_SCENE_5 = 'INTRO_SCENE 5'
+    INTRO_SCENE_6 = 'INTRO_SCENE 6'
+    INTRO_SCENE_7 = 'INTRO_SCENE 7'
     WORLD_MOVEMENT = 'WORLD_MOVEMENT'

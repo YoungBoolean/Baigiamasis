@@ -10,7 +10,7 @@ class Button:
                  scroll=False,
                  button_text_box_size=(0, 0),
                  button_text_padding=120,
-                 button_file_path='resources/menu_button.png',
+                 button_file_path=BUTTON_FILE_PATH + 'menu_button.png',
                  font_path=FONT_PATH,
                  button_size=(300, 50),
                  text_color=(255, 255, 255)):
@@ -25,28 +25,28 @@ class Button:
         self.text = text
         self.font = pygame.font.Font(font_path, self.max_font_size)
         self.text_surf, self.text_rect = self.update_text(self.text)
-        self.button_sound = pygame.mixer.Sound('resources/button_press.wav')
+        self.button_sound = pygame.mixer.Sound('resources/audio/button_press.wav')
         self.scroll = scroll
         self.scroll_button_size = (20, 400)
         self.hover_button_file_counter = 1
         self.animation_done = False
         self.go_back = False
 
-    def get_button_size(self):
+    def get_button_size(self) -> tuple:
         """Returns the size of the button"""
         return self.button_size
 
-    def draw(self, screen):
+    def draw(self, screen) -> None:
         """Draw the button and the text centered on it."""
         screen.blit(self.image, self.rect)
         screen.blit(self.text_surf, self.text_rect)
 
-    def check_hover(self, screen, repeat=True):
+    def check_hover(self, screen, repeat=True) -> None:
         """Check if the mouse is hovering over the button and change the image accordingly."""
         max_hover_button_file_index = 18
         if self.rect.collidepoint(pygame.mouse.get_pos()):
             filename = f"{self.hover_button_file_counter}.png"
-            hover_image_load = pygame.image.load(BUTTON_FILE_PATH + filename).convert_alpha()
+            hover_image_load = pygame.image.load(BUTTON_FILE_PATH + 'button_hover_animation/' + filename).convert_alpha()
             hover_image = pygame.transform.scale(hover_image_load, self.button_size)
             screen.blit(hover_image, self.rect)
             if not self.go_back:
@@ -62,7 +62,7 @@ class Button:
                     if self.hover_button_file_counter >= max_hover_button_file_index:
                         self.go_back = True
 
-    def text_box_appear(self, screen, file_path='resources/text_button/', max_index=14):
+    def text_box_appear(self, screen, file_path='resources/button/text_button_animation/', max_index=14) -> None:
         """Animate the first appearance of the text_box button"""
         if not self.animation_done:
             filename = f"{self.hover_button_file_counter}.png"
@@ -80,7 +80,7 @@ class Button:
         screen.blit(image, self.rect)
         screen.blit(self.text_surf, self.text_rect)
 
-    def update_text(self, text: str):
+    def update_text(self, text: str) -> tuple:
         """Update the text and adjust font size if the text is too long."""
         self.text = text
         font_size = self.max_font_size
@@ -98,7 +98,7 @@ class Button:
         self.text_surf = text_surf
         return text_surf, text_rect
 
-    def render_multiline_text(self, text, color, screen, line_spacing=1.5):
+    def render_multiline_text(self, text, color, screen, line_spacing=1.5) -> None:
         """Render multi-line text to a pygame surface."""
         words = [word.split(' ') for word in text.splitlines()]
         space_width, space_height = self.font.size(' ')
@@ -117,17 +117,20 @@ class Button:
             x = self.rect.left
             y += word_height * line_spacing
 
-    def reset_animation(self):
+    def reset_animation(self) -> None:
         """Reset the animation of the button"""
         self.hover_button_file_counter = 1
         self.animation_done = False
 
-    def play_button_sound(self):
-        """Play sound when button is clicked"""
+    def play_button_sound(self) -> None:
+        """Play sound when button is clicked, used by is_clicked method"""
         self.button_sound.play()
 
-    def is_clicked(self, event):
-        """Check if the button is clicked"""
+    def is_clicked(self, event) -> bool:
+        """
+        Check if the button is clicked, return true if clicked when mouse is hovering over button,
+        else return false
+        """
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.rect.collidepoint(event.pos):
                 self.play_button_sound()
