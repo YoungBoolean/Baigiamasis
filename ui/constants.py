@@ -4,6 +4,7 @@ import pygame
 RESOLUTIONS = [(800, 600), (1024, 768), (1280, 720), (1600, 900), (1920, 1080)]
 FPS = 60
 
+# Player name
 USER_NAME = 'Player'
 
 # Game meta
@@ -31,16 +32,16 @@ LOADING_IMAGE_PATH_LIST = ['resources/loading_screens/' + str(img) + '.png' for 
 FONT_PATH = 'resources/fonts/pixel-azure-bonds.ttf'
 TEXT_FONT_PATH = 'resources/fonts/arial.ttf'
 
-# Character
+# Character variables
 CHARACTER_SPEED = 5
 CHARACTER_WIDTH = 25
 CHARACTER_HEIGHT = 50
 
-# Character sprite
+# Character sprites
 sprite_path = 'resources/character_assets/char_template'
 SPRITE_PATH_LIST = [sprite_path + str(img) + '.png' for img in range(1, 4)]
 
-# Map
+# Main map
 NON_WALKABLE_AREAS = [
     pygame.Rect(56, 295, 68, 600),  # building 1
     pygame.Rect(292, 274, 80, 600),  # building 2
@@ -64,4 +65,31 @@ class GameState:
     INTRO_SCENE_5 = 'INTRO_SCENE 5'
     INTRO_SCENE_6 = 'INTRO_SCENE 6'
     INTRO_SCENE_7 = 'INTRO_SCENE 7'
+    BEDROOM_SCENE_1 = 'BEDROOM_SCENE 1'
+    BEDROOM_SCENE_2 = 'BEDROOM_SCENE 2'
+    BEDROOM_SCENE_3 = 'BEDROOM_SCENE 3'
+    BEDROOM_SCENE_4 = 'BEDROOM_SCENE 4'
+    BEDROOM_SCENE_5 = 'BEDROOM_SCENE 5'
+    BEDROOM_SCENE_6 = 'BEDROOM_SCENE 6'
+    BEDROOM_SCENE_7 = 'BEDROOM_SCENE 7'
+    BEDROOM_SCENE_8 = 'BEDROOM_SCENE 8'
+    BEDROOM_SCENE_9 = 'BEDROOM_SCENE 9'
+    BALCONY_SCENE_1 = 'BALCONY_SCENE 1'
+    BALCONY_SCENE_2 = 'BALCONY_SCENE 2'
+    BALCONY_SCENE_3 = 'BALCONY_SCENE 3'
+    BALCONY_SCENE_4 = 'BALCONY_SCENE 4'
+    BALCONY_SCENE_5 = 'BALCONY_SCENE 5'
+    BALCONY_SCENE_6 = 'BALCONY_SCENE 6'
+    KITCHEN_SCENE_1 = 'KITCHEN_SCENE 1'
+    KITCHEN_SCENE_2 = 'KITCHEN_SCENE 2'
+    KITCHEN_SCENE_3 = 'KITCHEN_SCENE 3'
+    KITCHEN_SCENE_4 = 'KITCHEN_SCENE 4'
+    BATHROOM_SCENE_1 = 'BATHROOM_SCENE 1'
+    BATHROOM_SCENE_2 = 'BATHROOM_SCENE 2'
+    BATHROOM_SCENE_3 = 'BATHROOM_SCENE 3'
+    BATHROOM_SCENE_4 = 'BATHROOM_SCENE 4'
+    GAME_OVER = 'GAME_OVER'
     WORLD_MOVEMENT = 'WORLD_MOVEMENT'
+
+
+CHOICED_GAME_STATE_LIST = [GameState.BALCONY_SCENE_1, GameState.BEDROOM_SCENE_3, GameState.BEDROOM_SCENE_5]

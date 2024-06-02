@@ -4,6 +4,7 @@ from ui.constants import FONT_PATH, BUTTON_FILE_PATH
 
 class Button:
     """Button class - responsible for the creation and functionality of buttons"""
+
     def __init__(self, x, y,
                  text='',
                  max_font_size=24,
@@ -46,7 +47,8 @@ class Button:
         max_hover_button_file_index = 18
         if self.rect.collidepoint(pygame.mouse.get_pos()):
             filename = f"{self.hover_button_file_counter}.png"
-            hover_image_load = pygame.image.load(BUTTON_FILE_PATH + 'button_hover_animation/' + filename).convert_alpha()
+            hover_image_load = pygame.image.load(
+                BUTTON_FILE_PATH + 'button_hover_animation/' + filename).convert_alpha()
             hover_image = pygame.transform.scale(hover_image_load, self.button_size)
             screen.blit(hover_image, self.rect)
             if not self.go_back:
@@ -98,7 +100,7 @@ class Button:
         self.text_surf = text_surf
         return text_surf, text_rect
 
-    def render_multiline_text(self, text, color, screen, line_spacing=1.5) -> None:
+    def render_multiline_text(self, text, screen, line_spacing=1.5, color=(0, 0, 0)) -> None:
         """Render multi-line text to a pygame surface."""
         words = [word.split(' ') for word in text.splitlines()]
         space_width, space_height = self.font.size(' ')

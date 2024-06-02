@@ -53,7 +53,8 @@ class BackgroundManager:
 
     def draw_background(self, screen):
         if self.slideshow:
-            screen.blit(self.images_slideshow[self.current_frame], (0, 0))
+            if self.frame_count > 0:
+                screen.blit(self.images_slideshow[self.current_frame], (0, 0))
         else:
             self.image = self.load_and_scale_background(self.image_path, self.screen_size)
             screen.blit(self.image, (0, 0))

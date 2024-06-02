@@ -2,17 +2,18 @@
 # Turime dict, kur yra laikoma scenų pavadinimai (pvz. Home, Store, Outside ir t.t.).
 # Scenos viduje yra laikomi visų veikėjų, pasakotojo tekstai listuose.
 
-from constants import USER_NAME
+from ui.constants import USER_NAME
 
 story_text = {
     "HomeRoom": {
         "selection": ["Balcony", "Kitchen", "Bathroom"],
         "story": [f"You are {USER_NAME}.",
-                  "You are thirsty. You just came back from a peculiarly exhausting sleep. What do you do?", ],
+                  "You are thirsty. You just came back from a peculiarly exhausting sleep. What do you do?",
+                  "You came back to the bedroom."],
         "player": [" ", " ", " "],
     },
     "HomeBalcony": {
-        "selection": ["Bedroom", "Outside"],
+        "selection": ["Bedroom", "Smoke", "Outside"],
         "story": ["It's the balcony, the day is unpleasantly warm.",
                   "There's a pigeon egg nested on an old box in the leftmost corner.",
                   "You don't seem to have any cigarettes with you.",
