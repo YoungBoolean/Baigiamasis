@@ -18,4 +18,4 @@ class User(Base):
     __tablename__ = "user"
     id = Column(Integer, primary_key=True)
     user_name = Column(String)
-    save_files = relationship("SaveFile", back_populates="user")
+    save_files = relationship("SaveFile", back_populates="user", cascade="all")

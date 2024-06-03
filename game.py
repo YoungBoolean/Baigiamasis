@@ -7,10 +7,10 @@ import pygame
 from ui.button import Button
 from ui.constants import FPS, GameStateName, TEXT_FONT_PATH, LOADING_IMAGE_PATH_LIST, RESOLUTIONS
 from ui.user_input_box import InputBox
-from save_states import save_game, load_game
 from character.character import Character
 from ui.utilities import when_character_in_specific_coords
 from ui.game_text import story_text
+from save_states import savestate
 
 
 def start(screen, clock, settings, background_manager_loading, background_manager,
@@ -217,12 +217,13 @@ def start(screen, clock, settings, background_manager_loading, background_manage
 
             # Button clicks
             if save_btn.is_clicked(event):
-                save_game({'game_state': game_state, 'username': user_name})
+                savestate.save_game(f"{game_state}", user_name)
             if load_btn.is_clicked(event):
-                loaded_state = load_game()
-                if loaded_state:
-                    game_state = loaded_state['game_state']
-                    user_name = loaded_state.get('username')
+                last_gamestate, last_player_name = savestate.get_last_save()
+                if last_gamestate and last_player_name:
+                    start(screen, clock, settings, background_manager_loading, background_manager,
+                          save_state=last_gamestate, player_name=last_player_name)
+                    return
             if menu_btn.is_clicked(event):
                 return
 
