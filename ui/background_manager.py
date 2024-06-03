@@ -21,6 +21,7 @@ class BackgroundManager:
         self.counter = -800
         if clouds:
             self.clouds_image = self.load_and_scale_background('resources/main_map/clouds.png', self.screen_size)
+        self.filter_img = self.load_and_scale_background('resources/scene_backgrounds/filter.png', self.screen_size)
 
     def load_and_scale_background(self, image_path, screen_size):
         # Load the image
@@ -47,14 +48,23 @@ class BackgroundManager:
     def move_from_left_to_right(self, screen, settings):
         screen_width, screen_height = settings.current_resolution
         self.counter += 2
-        screen.blit(self.clouds_image, (self.counter, 0))
+        clouds_img = pygame.transform.scale(self.clouds_image, self.screen_size)
+        screen.blit(clouds_img, (self.counter, 0))
         if self.counter == 900 + screen_width / 2:
             self.counter = -800
 
     def draw_background(self, screen):
         if self.slideshow:
             if self.frame_count > 0:
-                screen.blit(self.images_slideshow[self.current_frame], (0, 0))
+                try:
+                    screen.blit(self.images_slideshow[self.current_frame], (0, 0))
+                except IndexError:
+                    self.image = self.load_and_scale_background(self.image_path, self.screen_size)
+                    screen.blit(self.image, (0, 0))
         else:
             self.image = self.load_and_scale_background(self.image_path, self.screen_size)
             screen.blit(self.image, (0, 0))
+
+    def draw_filter(self, screen):
+        filter_img = pygame.transform.scale(self.filter_img, self.screen_size)
+        screen.blit(filter_img, (0, 0))

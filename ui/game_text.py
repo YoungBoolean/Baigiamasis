@@ -6,14 +6,14 @@ from ui.constants import USER_NAME
 
 story_text = {
     "HomeRoom": {
-        "selection": ["Balcony", "Kitchen", "Bathroom"],
+        "selection": ["Balcony", "Kitchen", "Bathroom", "Sleep"],
         "story": [f"You are {USER_NAME}.",
                   "You are thirsty. You just came back from a peculiarly exhausting sleep. What do you do?",
                   "You came back to the bedroom."],
         "player": [" ", " ", " "],
     },
     "HomeBalcony": {
-        "selection": ["Bedroom", "Smoke", "Outside"],
+        "selection": ["Bedroom", "Smoke", "Outside", "Check Pigeon nest"],
         "story": ["It's the balcony, the day is unpleasantly warm.",
                   "There's a pigeon egg nested on an old box in the leftmost corner.",
                   "You don't seem to have any cigarettes with you.",
@@ -23,7 +23,7 @@ story_text = {
         "player": [" ", " ", " "],
     },
     "HomeKitchen": {
-        "selection": ["Talk to Mom", "Food", "Outside", "Bedroom"],
+        "selection": ["Talk to Mom", "Food", "Outside", "Bedroom", "Ask for ciggie"],
         "story": ["You arrive at the Kitchen, mom is cooking breakfast while smoking a cigarette.",
                   "She doesn't pay you any attention.",
                   "You open the fridge door. There's scarcely any food inside. \nYou conclude that you're not hungry.",
@@ -42,8 +42,8 @@ story_text = {
                   "You find yourself heading down the stairwell.",
                   "[CHECK SUCCESS] You narrowly miss the eye contact of a passing neighbour.",
                   "[CHECK FAILURE] The neighbour's gaze compels you to say something."],
-        "player": ["Hello", " ", " "],
-        "kaimynas": ["Hello", " ", " "],
+        "player": ["\"Hello\"", " ", " "],
+        "kaimynas": ["\"Hello\"", " ", " "],
     },
     "HomeNarvelis": {
         "selection": ["Listen in", "Stare him down", "Leave"],
@@ -95,13 +95,14 @@ story_text = {
              "Perhaps this is the stupidest thing you've ever done in your life.",
              "You're interrogated by security, while they wait for the cops to arrive.",
              "Then you're taken away by the cops for attempted theft.",
-             "Congratulations, game over."],
+             "Congratulations, game over.",
+             "You pay with the pigeon money. Well, when life gives you lemons..."],
         "player":
-            ["Good afternoon, a Camel Blue please.", "I'm sorry but I seem to have no money on me, "
-                                                     "can i buy the cigarretes now and return later with the money?",
-             "Pretty please, I swear I'll return with the money."],
-        "kaimynas":
-            ["Certainly, that'll be X amount of currency.", "I'm sorry sir but no, you'll need to pay now.",
-             "I am sorry sir, but no money, no products."],
+            ["\"Good afternoon, a Camel Blue please.\"", "\"I'm sorry but I seem to have no money on me, "
+                                                     "can i buy the cigarretes now and return later with the money?\"",
+             "\"Pretty please, I swear I'll return with the money.\""],
+        "kasininke":
+            ["\"Certainly, that'll be X amount of currency.\"", "\"I'm sorry sir but no, you'll need to pay NOW.\"",
+             "\"I am sorry sir, but no money, no products.\""],
     },
 }

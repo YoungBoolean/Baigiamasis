@@ -59,6 +59,7 @@ def settings_menu(screen, clock, settings, background_manager, background_manage
         fullscreen_btn.check_hover(screen)
         back_btn.draw(screen)
         back_btn.check_hover(screen)
+        background_manager.draw_filter(screen)
 
         pygame.display.flip()
         clock.tick(FPS)

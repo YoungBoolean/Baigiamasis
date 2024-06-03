@@ -88,6 +88,6 @@ class GameMenu:
             start_btn.check_hover(self.screen)
             settings_btn.draw(self.screen)
             settings_btn.check_hover(self.screen)
-
+            self.background_manager.draw_filter(self.screen)
             pygame.display.flip()
             self.clock.tick(FPS)
