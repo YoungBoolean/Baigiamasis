@@ -34,7 +34,8 @@ story_text = {
     "HomeBathroom": {
         "selection": ["Bedroom"],
         "story": ["You've entered the bathroom. Despite sleeping for 11 hours, the mirror reflects your tired face.",
-                  "You go back to your room."],
+                  "You go back to your room.",
+                  "Uhh nothing changed here bro."],
         "player": [" ", " ", " "],
     },
     "HomeLaiptine": {

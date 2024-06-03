@@ -1,9 +1,10 @@
 import pygame
-from ui.constants import CHARACTER_WIDTH, CHARACTER_HEIGHT, NON_WALKABLE_AREAS, SPRITE_PATH_LIST
+from ui.constants import CHARACTER_WIDTH, CHARACTER_HEIGHT, NON_WALKABLE_AREAS, SPRITE_PATH_LIST, ENEMY_SPRITE_PATH_LIST
 
 
 class Character:
-    def __init__(self, x, y, screen_width, screen_height, sprite_path=SPRITE_PATH_LIST):
+    def __init__(self, x, y, screen_width, screen_height, sprite_path=SPRITE_PATH_LIST,
+                 enemy_sprite_path=ENEMY_SPRITE_PATH_LIST, enemy=False):
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.width_scale = self.screen_width / 800  # original width
@@ -11,7 +12,10 @@ class Character:
         self.character_width, self.character_height = (CHARACTER_WIDTH * self.width_scale,
                                                        CHARACTER_HEIGHT * self.height_scale)
         self.rect = pygame.Rect(x, y, self.character_width, self.character_height)
-        self.sprites = [pygame.image.load(sprite).convert_alpha() for sprite in sprite_path]
+        if enemy:
+            self.sprites = [pygame.image.load(sprite).convert_alpha() for sprite in enemy_sprite_path]
+        else:
+            self.sprites = [pygame.image.load(sprite).convert_alpha() for sprite in sprite_path]
         self.sprite_index = 0
         self.image = pygame.transform.scale(self.sprites[0],
                                             (self.character_width, self.character_height))
@@ -57,3 +61,19 @@ class Character:
 
     def return_position(self):
         return self.rect.topleft
+
+    def chase(self, target_x, target_y, chase_speed):
+        # Calculate the distance to the target
+        distance_x = target_x - self.rect.x
+        distance_y = target_y - self.rect.y
+        distance = (distance_x ** 2 + distance_y ** 2) ** 0.5
+
+        # Normalize the direction
+        if distance > 0:
+            direction_x = distance_x / distance
+            direction_y = distance_y / distance
+
+            # Update the position
+            dx = direction_x * chase_speed
+            dy = direction_y * chase_speed
+            self.move(dx, dy)

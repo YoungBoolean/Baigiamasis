@@ -39,7 +39,9 @@ CHARACTER_HEIGHT = 50
 
 # Character sprites
 sprite_path = 'resources/character_assets/char_template'
+enemy_sprite_path = 'resources/character_assets/enemy_char_template'
 SPRITE_PATH_LIST = [sprite_path + str(img) + '.png' for img in range(1, 4)]
+ENEMY_SPRITE_PATH_LIST = [enemy_sprite_path + str(img) + '.png' for img in range(1, 4)]
 
 # Main map
 NON_WALKABLE_AREAS = [
@@ -76,6 +78,7 @@ class GameStateName:
     BEDROOM_SCENE_9 = 'BEDROOM_SCENE 9'
     BEDROOM_SCENE_10 = 'BEDROOM_SCENE 10'
     BEDROOM_SCENE_11 = 'BEDROOM_SCENE 11'
+    BEDROOM_SCENE_12 = 'BEDROOM_SCENE 12'
     BALCONY_SCENE_1 = 'BALCONY_SCENE 1'
     BALCONY_SCENE_2 = 'BALCONY_SCENE 2'
     BALCONY_SCENE_3 = 'BALCONY_SCENE 3'
@@ -165,6 +168,9 @@ class GameStateName:
     STORE_SCENE_27 = 'STORE_SCENE_27'
     STORE_SCENE_28 = 'STORE_SCENE_28'
     STORE_SCENE_29 = 'STORE_SCENE_29'
+    SLEEP_SCENE_1 = 'SLEEP_SCENE_1'
+    SLEEP_SCENE_2 = 'SLEEP_SCENE_2'
     GAME_OVER = 'GAME_OVER'
     GAME_COMPLETED = 'GAME_COMPLETED'
     WORLD_MOVEMENT = 'WORLD_MOVEMENT'
+    NIGHTMARE_WORLD_MOVEMENT = 'NIGHTMARE_WORLD_MOVEMENT'

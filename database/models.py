@@ -1,38 +1,21 @@
-from sqlalchemy import Column, Integer, String, Float, Date
-from db import Base
+from sqlalchemy import Column, Integer, String, Date, ForeignKey
+from sqlalchemy.orm import relationship, declarative_base
 from datetime import date
+
+Base = declarative_base()
+
+
+class SaveFile(Base):
+    __tablename__ = "save_file"
+    id = Column(Integer, primary_key=True)
+    game_stage = Column(String)
+    date = Column(Date, default=date.today())
+    user_id = Column(Integer, ForeignKey("user.id"))
+    user = relationship("User", back_populates='save_files')
 
 
 class User(Base):
-    __tablename__ = "user_info"
+    __tablename__ = "user"
     id = Column(Integer, primary_key=True)
-    username = Column(String)
-    death_count = Column(Float)
-    tipas = Column(String)
-
-    def __init__(self, pavadinimas, suma, tipas, date=date.today()):
-        self.pavadinimas = pavadinimas
-        self.suma = suma
-        self.tipas = tipas
-        self.date = date
-
-    def __str__(self):
-        return f"{self.id}, {self.pavadinimas}, {self.suma}, {self.tipas}"
-
-
-class Save(Base):
-    __tablename__ = "user_saves"
-    id = Column(Integer, primary_key=True)
-    username = Column(String)
-    death_count = Column(Float)
-    tipas = Column(String)
-
-    def __init__(self, pavadinimas, suma, tipas, date=date.today()):
-        self.pavadinimas = pavadinimas
-        self.suma = suma
-        self.tipas = tipas
-        self.date = date
-
-    def __str__(self):
-        return f"{self.id}, {self.pavadinimas}, {self.suma}, {self.tipas}"
-
+    user_name = Column(String)
+    save_files = relationship("SaveFile", back_populates="user")

@@ -65,6 +65,7 @@ def start(screen, clock, settings, background_manager_loading, background_manage
                       text_color=(20, 20, 20), button_text_padding=90,
                       button_file_path='resources/button/button_hover_animation/14.png')
     character = Character(screen_width // 2, screen_height // 2, screen_width, screen_height)
+    chasing_character = Character(screen_width // 3, screen_height // 3, screen_width, screen_height, enemy=True)
     choice_btn_1 = Button((260 * width_scale),
                           (180 * height_scale),
                           'Choice 1', text_color=(20, 20, 20), button_text_padding=10,
@@ -90,6 +91,7 @@ def start(screen, clock, settings, background_manager_loading, background_manage
     while running:
         random_number_generator = randint(1, 10)
         choice_made = False
+
         if game_state == GameStateName.WORLD_MOVEMENT:
             keys = pygame.key.get_pressed()
             dx, dy = 0, 0
@@ -147,6 +149,58 @@ def start(screen, clock, settings, background_manager_loading, background_manage
                 keys = pygame.key.get_pressed()
                 if keys[pygame.K_y]:
                     game_state = GameStateName.NARVELIS_SCENE_23
+
+        if game_state == GameStateName.NIGHTMARE_WORLD_MOVEMENT:
+            keys = pygame.key.get_pressed()
+            dx, dy = 0, 0
+            if keys[pygame.K_LEFT]:
+                dx = -5 * width_scale  # Move left
+            if keys[pygame.K_RIGHT]:
+                dx = 5 * width_scale  # Move right
+            if keys[pygame.K_UP]:
+                dy = -5 * width_scale  # Move up
+            if keys[pygame.K_DOWN]:
+                dy = 5 * width_scale  # Move down
+            if keys[pygame.K_LEFT] and keys[pygame.K_LSHIFT]:
+                dx = -15 * width_scale  # Move left FASTER
+            if keys[pygame.K_RIGHT] and keys[pygame.K_LSHIFT]:
+                dx = 15 * width_scale  # Move right FASTER
+            if keys[pygame.K_UP] and keys[pygame.K_LSHIFT]:
+                dy = -15 * width_scale  # Move up FASTER
+            if keys[pygame.K_DOWN] and keys[pygame.K_LSHIFT]:
+                dy = 15 * width_scale  # Move down FASTER
+            # Clear screen
+            screen.fill((0, 0, 0))
+            # Update character position
+            character.move(dx, dy)
+            main_char_pos = character.return_position()
+            enemy_char_pos = chasing_character.return_position()
+
+            chasing_character.chase(main_char_pos[0], main_char_pos[1], chase_speed=2)
+
+            # Draw elements
+            background_manager.update_image_path('resources/main_map/night.jpg')
+            background_manager.draw_background(screen)
+            character.draw(screen)
+            chasing_character.draw(screen)
+
+            if main_char_pos == enemy_char_pos:
+                game_state = GameStateName.GAME_OVER
+
+            # if character moves to a specific coordinate
+            if when_character_in_specific_coords(width_scale,
+                                                 height_scale,
+                                                 character,
+                                                 (730, 780),
+                                                 (30, 80)):
+                text_btn.text_box_appear(screen)
+                text_btn.update_text('')
+                multi_text_btn.render_multiline_text('Would you like to SAVE YOURSELF NOW?\n'
+                                                     'Press "Y" to YES YES YES PLEASE',
+                                                     screen)
+                keys = pygame.key.get_pressed()
+                if keys[pygame.K_y]:
+                    game_state = GameStateName.BEDROOM_SCENE_12
 
         for event in pygame.event.get():
             # mouse coordinates printing
@@ -284,7 +338,7 @@ def start(screen, clock, settings, background_manager_loading, background_manage
                     text_btn.reset_animation()
                     choice_made = True
                 elif choice_btn_3.is_clicked(event):
-                    game_state = GameStateName.BATHROOM_SCENE_99
+                    game_state = GameStateName.BATHROOM_SCENE_3
                     text_btn.reset_animation()
                     choice_made = True
                 elif choice_btn_4.is_clicked(event):
@@ -337,6 +391,18 @@ def start(screen, clock, settings, background_manager_loading, background_manage
                         game_state = GameStateName.BALCONY_SCENE_10
                         choice_made = True
                     text_btn.reset_animation()
+
+            if game_state == GameStateName.BATHROOM_SCENE_2:
+                if choice_btn_1.is_clicked(event):
+                    game_state = GameStateName.BEDROOM_SCENE_4
+                    text_btn.reset_animation()
+                    choice_made = True
+
+            if game_state == GameStateName.BATHROOM_SCENE_4:
+                if choice_btn_1.is_clicked(event):
+                    game_state = GameStateName.BEDROOM_SCENE_11
+                    text_btn.reset_animation()
+                    choice_made = True
 
             # Space or Mouse click events for advancing the game state
             if not choice_made and (event.type == pygame.MOUSEBUTTONDOWN or (
@@ -557,6 +623,14 @@ def start(screen, clock, settings, background_manager_loading, background_manage
                     game_state = GameStateName.GAME_COMPLETED
                 elif game_state == GameStateName.GAME_COMPLETED:
                     return
+                elif game_state == GameStateName.BATHROOM_SCENE_1:
+                    game_state = GameStateName.BATHROOM_SCENE_2
+                elif game_state == GameStateName.BATHROOM_SCENE_3:
+                    game_state = GameStateName.BATHROOM_SCENE_4
+                elif game_state == GameStateName.SLEEP_SCENE_1:
+                    game_state = GameStateName.SLEEP_SCENE_2
+                elif game_state == GameStateName.SLEEP_SCENE_2:
+                    game_state = GameStateName.NIGHTMARE_WORLD_MOVEMENT
 
         # Screen drawing based on game state
         if game_state == GameStateName.INTRO_INPUT:
@@ -1367,16 +1441,35 @@ def start(screen, clock, settings, background_manager_loading, background_manage
             text_btn.text_box_appear(screen)
             text_btn.update_text('')
             multi_text_btn.render_multiline_text(story_text.get('HomeBathroom').get('story')[0], screen)
-
-
-
-
-
-
-
-
-
-
+        elif game_state == GameStateName.BATHROOM_SCENE_2:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/bathroom.jpg')
+            background_manager.draw_background(screen)
+            choice_btn_1.update_text(story_text.get('HomeBathroom').get('selection')[0])
+            choice_btn_1.draw(screen)
+            choice_btn_1.check_hover(screen)
+        elif game_state == GameStateName.BATHROOM_SCENE_3:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/bathroom.jpg')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text('')
+            multi_text_btn.render_multiline_text(story_text.get('HomeBathroom').get('story')[2], screen)
+        elif game_state == GameStateName.BATHROOM_SCENE_4:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/bathroom.jpg')
+            background_manager.draw_background(screen)
+            choice_btn_1.update_text(story_text.get('HomeBathroom').get('selection')[0])
+            choice_btn_1.draw(screen)
+            choice_btn_1.check_hover(screen)
+        elif game_state == GameStateName.SLEEP_SCENE_1:
+            screen.fill((0, 0, 0))
+            text_btn.text_box_appear(screen)
+            text_btn.update_text('You faceplant your head on the pillow.')
+        elif game_state == GameStateName.SLEEP_SCENE_2:
+            screen.fill((0, 0, 0))
+            text_btn.text_box_appear(screen)
+            text_btn.update_text('Before long you\'re taking a sound afternoon nap.')
 
         # Update the display, continously draw save, load, menu buttons and check their hovers
         background_manager.draw_filter(screen)
