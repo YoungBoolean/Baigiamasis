@@ -1,3 +1,10 @@
+"""
+start_game.py
+
+This module initializes the Pygame environment and sets up the main game window. It also creates
+instances of the BackgroundManager and GameMenu classes to manage the background and game menu respectively.
+"""
+
 import pygame
 import os
 
@@ -10,13 +17,14 @@ from settings import Settings
 pygame.init()
 
 # Screen setup
-os.environ['SDL_VIDEO_CENTERED'] = '1'  # Window centravimas
-screen = pygame.display.set_mode((800, 600))
-pygame.display.set_caption(f"{GAME_NAME} {GAME_VERSION}")
-clock = pygame.time.Clock()
+os.environ['SDL_VIDEO_CENTERED'] = '1'  # Center the game window on the screen
+screen = pygame.display.set_mode((800, 600))  # Set the screen resolution to 800x600
+pygame.display.set_caption(f"{GAME_NAME} {GAME_VERSION}")  # Set the window caption to include the game name and version
+clock = pygame.time.Clock()  # Create a clock object to manage the frame rate
 
-background_manager = BackgroundManager(screen.get_size(), slideshow=False)
-background_manager_loading = BackgroundManager(screen.get_size())
+# Initialize background managers
+background_manager = BackgroundManager(screen.get_size(), slideshow=False)  # Background manager for the main game
+background_manager_loading = BackgroundManager(screen.get_size())  # Background manager for the loading screen
 
 if __name__ == '__main__':
     GameMenu(screen, clock, Settings(), background_manager, background_manager_loading)
