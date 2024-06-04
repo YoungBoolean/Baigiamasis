@@ -3,8 +3,13 @@ from ui.constants import CHARACTER_WIDTH, CHARACTER_HEIGHT, NON_WALKABLE_AREAS, 
 
 
 class Character:
+    """
+    Responsible for creation of character objects, character movement logic,
+    drawing of character sprites, collision detection.
+    """
     def __init__(self, x, y, screen_width, screen_height, sprite_path=SPRITE_PATH_LIST,
                  enemy_sprite_path=ENEMY_SPRITE_PATH_LIST, enemy=False):
+        self.enemy = enemy
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.width_scale = self.screen_width / 800  # original width
@@ -12,7 +17,7 @@ class Character:
         self.character_width, self.character_height = (CHARACTER_WIDTH * self.width_scale,
                                                        CHARACTER_HEIGHT * self.height_scale)
         self.rect = pygame.Rect(x, y, self.character_width, self.character_height)
-        if enemy:
+        if self.enemy:
             self.sprites = [pygame.image.load(sprite).convert_alpha() for sprite in enemy_sprite_path]
         else:
             self.sprites = [pygame.image.load(sprite).convert_alpha() for sprite in sprite_path]
@@ -23,20 +28,37 @@ class Character:
 
     def move(self, dx, dy):
         new_rect = self.rect.move(dx, dy)
-        if dx >= 5 * self.width_scale:
-            self.sprite_index += 1
-            self.image = pygame.transform.scale(self.sprites[self.sprite_index],
-                                                (self.character_width, self.character_height))
-            self.flipped_image = pygame.transform.flip(self.image, True, False)  # Flip the sprite
-            self.image = self.flipped_image
-            if self.sprite_index >= 2:
-                self.sprite_index = 0
-        if dx == -5 * self.width_scale or dx == -15 * self.width_scale:
-            self.sprite_index += 1
-            self.image = pygame.transform.scale(self.sprites[self.sprite_index],
-                                                (self.character_width, self.character_height))
-            if self.sprite_index >= 2:
-                self.sprite_index = 0
+        if not self.enemy:
+            if dx >= 5 * self.width_scale:
+                self.sprite_index += 1
+                self.image = pygame.transform.scale(self.sprites[self.sprite_index],
+                                                    (self.character_width, self.character_height))
+                self.flipped_image = pygame.transform.flip(self.image, True, False)  # Flip the sprite
+                self.image = self.flipped_image
+                if self.sprite_index >= 2:
+                    self.sprite_index = 0
+            if dx == -5 * self.width_scale or dx == -15 * self.width_scale:
+                self.sprite_index += 1
+                self.image = pygame.transform.scale(self.sprites[self.sprite_index],
+                                                    (self.character_width, self.character_height))
+                if self.sprite_index >= 2:
+                    self.sprite_index = 0
+        if self.enemy:
+            if dx >= 3 * self.width_scale:
+                self.sprite_index += 1
+                self.image = pygame.transform.scale(self.sprites[self.sprite_index],
+                                                    (self.character_width, self.character_height))
+                self.flipped_image = pygame.transform.flip(self.image, True, False)  # Flip the sprite
+                self.image = self.flipped_image
+                if self.sprite_index >= 2:
+                    self.sprite_index = 0
+            if dx == -3 * self.width_scale:
+                self.sprite_index += 1
+                self.image = pygame.transform.scale(self.sprites[self.sprite_index],
+                                                    (self.character_width, self.character_height))
+                if self.sprite_index >= 2:
+                    self.sprite_index = 0
+
         if self.is_within_bounds(new_rect) and not self.collides_with_non_walkable(new_rect):
             self.rect = new_rect
 
@@ -63,6 +85,8 @@ class Character:
         return self.rect.topleft
 
     def chase(self, target_x, target_y, chase_speed):
+        """Used by the 'enemy' variant of character object, moves character to target coordinates"""
+
         # Calculate the distance to the target
         distance_x = target_x - self.rect.x
         distance_y = target_y - self.rect.y

@@ -1,8 +1,3 @@
-def calculate_position(screen_width, screen_height, rel_x, rel_y):
-    x = screen_width * rel_x
-    y = screen_height * rel_y
-    return x, y
-
 
 def when_character_in_specific_coords(width_scale, height_scale, character,
                                       coordinates_x: tuple, coordinates_y: tuple):

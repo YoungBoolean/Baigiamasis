@@ -3,7 +3,7 @@ from ui.constants import FONT_PATH, BUTTON_FILE_PATH
 
 
 class Button:
-    """Button class - responsible for the creation and functionality of buttons"""
+    """Button class - responsible for the creation, drawing, and functionality of buttons"""
 
     def __init__(self, x, y,
                  text='',
@@ -65,7 +65,7 @@ class Button:
                         self.go_back = True
 
     def text_box_appear(self, screen, file_path='resources/button/text_button_animation/', max_index=14) -> None:
-        """Animate the first appearance of the text_box button"""
+        """Animate the appearance of the text_box button"""
         if not self.animation_done:
             filename = f"{self.hover_button_file_counter}.png"
             image_load = pygame.image.load(file_path + filename).convert_alpha()

@@ -7,7 +7,7 @@ from ui.constants import USER_NAME
 story_text = {
     "HomeRoom": {
         "selection": ["Balcony", "Kitchen", "Bathroom", "Sleep"],
-        "story": [f"You are {USER_NAME}.",
+        "story": [f"THE HEAT!",
                   "You are thirsty. You just came back from a peculiarly exhausting sleep. What do you do?",
                   "You came back to the bedroom."],
         "player": [" ", " ", " "],

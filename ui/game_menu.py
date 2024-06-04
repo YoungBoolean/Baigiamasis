@@ -3,16 +3,14 @@ import sys
 import pygame
 
 from ui.button import Button
-from ui.constants import FPS
-from ui.settings_menu import settings_menu
+from ui.constants import FPS, RESOLUTIONS
+from ui.settings_menu import SettingsMenu
 from game import start
-from ui.utilities import calculate_position
 from .load_menu import LoadMenu
 
 
 class GameMenu:
     """Game menu game loop class, responsible for drawing the main menu, button object creation"""
-
     def __init__(self, screen, clock, settings, background_manager, background_manager_loading):
         self.screen = screen
         self.clock = clock
@@ -23,21 +21,18 @@ class GameMenu:
         self.start()
 
     def create_buttons(self) -> tuple:
-        start_btn_x, start_btn_y = calculate_position(self.screen_width, self.screen_height, 0.313,
-                                                      0.62)
-        start_btn = Button(start_btn_x,
-                           start_btn_y,
-                           'New game')
+        original_width, original_height = RESOLUTIONS[0]
+        width_scale = self.screen_width / original_width
+        height_scale = self.screen_height / original_height
 
-        load_btn_x, load_btn_y = calculate_position(self.screen_width, self.screen_height, 0.313, 0.72)
-        load_btn = Button(load_btn_x,
-                          load_btn_y,
-                          'Load game')
+        start_btn = Button(250 * width_scale, 180 * height_scale,
+                           'New game', button_size=(300 * width_scale, 50 * height_scale))
 
-        settings_btn_x, settings_btn_y = calculate_position(self.screen_width, self.screen_height, 0.313, 0.82)
-        settings_btn = Button(settings_btn_x,
-                              settings_btn_y,
-                              'Settings')
+        load_btn = Button(250 * width_scale, 240 * height_scale,
+                          'Load game', button_size=(300 * width_scale, 50 * height_scale))
+
+        settings_btn = Button(250 * width_scale, 300 * height_scale,
+                              'Settings', button_size=(300 * width_scale, 50 * height_scale))
 
         return start_btn, load_btn, settings_btn
 
@@ -67,7 +62,7 @@ class GameMenu:
                              self.background_manager, self.background_manager_loading)
 
                 if settings_btn.is_clicked(event):
-                    settings_menu(self.screen, self.clock, self.settings,
+                    SettingsMenu(self.screen, self.clock, self.settings,
                                   self.background_manager, self.background_manager_loading)
 
             self.background_manager_loading.update_background_slideshow()

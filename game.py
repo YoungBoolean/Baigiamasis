@@ -1,20 +1,21 @@
+import datetime
 import sys
-import time
 from random import randint
 
 import pygame
 
 from ui.button import Button
-from ui.constants import FPS, GameStateName, TEXT_FONT_PATH, LOADING_IMAGE_PATH_LIST, RESOLUTIONS
+from ui.constants import FPS, GameStateName, TEXT_FONT_PATH, LOADING_IMAGE_PATH_LIST, RESOLUTIONS, USER_NAME
 from ui.user_input_box import InputBox
 from character.character import Character
 from ui.utilities import when_character_in_specific_coords
 from ui.game_text import story_text
-from save_states import savestate
+from database.save_states import savestate
 
 
 def start(screen, clock, settings, background_manager_loading, background_manager,
-          save_state=GameStateName.LOADING_SCREEN, player_name='Player'):
+          save_state=GameStateName.LOADING_SCREEN, player_name=USER_NAME):
+    """Main game loop"""
     screen_width, screen_height = settings.current_resolution
     original_width, original_height = RESOLUTIONS[0]
     width_scale = screen_width / original_width
@@ -23,49 +24,48 @@ def start(screen, clock, settings, background_manager_loading, background_manage
     game_state = save_state
     user_name = player_name
 
-    text_btn = Button((80 * width_scale),
-                      (350 * height_scale),
+    text_btn = Button(80 * width_scale,
+                      350 * height_scale,
                       '', button_size=(652 * width_scale, 252 * height_scale),
                       font_path=TEXT_FONT_PATH,
                       text_color=(20, 20, 20),
                       button_text_padding=20)
-    multi_text_btn = Button((130 * width_scale),
-                            (400 * height_scale),
+    multi_text_btn = Button(130 * width_scale,
+                            400 * height_scale,
                             '', button_size=(652 * width_scale, 252 * height_scale),
                             font_path=TEXT_FONT_PATH,
                             text_color=(20, 20, 20),
                             button_text_padding=20)
-    username_input_box = InputBox((240 * width_scale),
-                                  (515 * height_scale), 300, 200)
-    username_ask_btn = Button((80 * width_scale),
-                              (350 * height_scale),
+    username_input_box = InputBox(240 * width_scale,
+                                  515 * height_scale, 300, 200)
+    username_ask_btn = Button(80 * width_scale,
+                              350 * height_scale,
                               'Please enter your name:',
                               button_size=(652 * width_scale, 252 * height_scale),
                               font_path=TEXT_FONT_PATH,
                               text_color=(20, 20, 20),
                               button_text_padding=20)
-    save_btn = Button((650 * width_scale),
-                      (1 * height_scale),
+    save_btn = Button(650 * width_scale,
+                      1 * height_scale,
                       'Save game',
                       button_size=(150 * width_scale, 25 * height_scale),
                       text_color=(20, 20, 20),
                       button_text_padding=20,
                       button_file_path='resources/button/button_hover_animation/14.png')
-    load_btn = Button((500 * width_scale),
-                      (1 * height_scale),
+    load_btn = Button(500 * width_scale,
+                      1 * height_scale,
                       'Load game',
                       button_size=(150 * width_scale, 25 * height_scale),
                       text_color=(20, 20, 20),
                       button_text_padding=20,
                       button_file_path='resources/button/button_hover_animation/14.png')
-    menu_btn = Button((350 * width_scale),
-                      (1 * height_scale),
+    menu_btn = Button(350 * width_scale,
+                      1 * height_scale,
                       'Menu',
                       button_size=(150 * width_scale, 25 * height_scale),
                       text_color=(20, 20, 20), button_text_padding=90,
                       button_file_path='resources/button/button_hover_animation/14.png')
-    character = Character(screen_width // 2, screen_height // 2, screen_width, screen_height)
-    chasing_character = Character(screen_width // 3, screen_height // 3, screen_width, screen_height, enemy=True)
+
     choice_btn_1 = Button((260 * width_scale),
                           (180 * height_scale),
                           'Choice 1', text_color=(20, 20, 20), button_text_padding=10,
@@ -83,8 +83,14 @@ def start(screen, clock, settings, background_manager_loading, background_manage
                           'Choice 3', text_color=(20, 20, 20), button_text_padding=10,
                           button_file_path='resources/button/button_hover_animation/14.png')
 
+    character = Character(screen_width // 2, screen_height // 2, screen_width, screen_height)
+    chasing_character = Character(screen_width // 3, screen_height // 3, screen_width, screen_height, enemy=True)
+
     pigeon_money_taken = False
     camel_blue_received = False
+
+    last_enemy_creation_time = datetime.datetime.now()
+    enemies = [chasing_character]
 
     running = True
 
@@ -92,7 +98,7 @@ def start(screen, clock, settings, background_manager_loading, background_manage
         random_number_generator = randint(1, 10)
         choice_made = False
 
-        if game_state == GameStateName.WORLD_MOVEMENT:
+        if game_state == GameStateName.WORLD_MOVEMENT or GameStateName.NIGHTMARE_WORLD_MOVEMENT:
             keys = pygame.key.get_pressed()
             dx, dy = 0, 0
             if keys[pygame.K_LEFT]:
@@ -111,96 +117,91 @@ def start(screen, clock, settings, background_manager_loading, background_manage
                 dy = -15 * width_scale  # Move up FASTER
             if keys[pygame.K_DOWN] and keys[pygame.K_LSHIFT]:
                 dy = 15 * width_scale  # Move down FASTER
-            # Clear screen
-            screen.fill((0, 0, 0))
-            # Update character position
-            character.move(dx, dy)
-            background_manager.update_image_path('resources/main_map/day_exclamations.jpg')
-            background_manager.draw_background(screen)
-            character.draw(screen)
-            background_manager.update_image_path('resources/main_map/trees.png')
-            background_manager.draw_background(screen)
-            background_manager.update_image_path('resources/main_map/clouds.png')
-            background_manager.move_from_left_to_right(screen, settings)
 
-            # if character moves to a specific coordinate
-            if when_character_in_specific_coords(width_scale,
-                                                 height_scale,
-                                                 character,
-                                                 (730, 780),
-                                                 (30, 80)):
-                text_btn.text_box_appear(screen)
-                text_btn.update_text('')
-                multi_text_btn.render_multiline_text('Would you like to Enter the Store?\n"Press "Y" to Enter',
-                                                     screen)
-                keys = pygame.key.get_pressed()
-                if keys[pygame.K_y]:
-                    game_state = GameStateName.STORE_SCENE_1
+            if game_state == GameStateName.WORLD_MOVEMENT:
+                # Clear screen
+                screen.fill((0, 0, 0))
+                # Update character position
+                character.move(dx, dy)
+                background_manager.update_image_path('resources/main_map/day_exclamations.jpg')
+                background_manager.draw_background(screen)
+                character.draw(screen)
+                background_manager.update_image_path('resources/main_map/trees.png')
+                background_manager.draw_background(screen)
+                background_manager.update_image_path('resources/main_map/clouds.png')
+                background_manager.move_from_left_to_right(screen, settings)
 
-            if when_character_in_specific_coords(width_scale,
-                                                 height_scale,
-                                                 character,
-                                                 (370, 390),
-                                                 (270, 320)):
-                text_btn.text_box_appear(screen)
-                text_btn.update_text('')
-                multi_text_btn.render_multiline_text('Go back home?\n"Press "Y" to Enter"',
-                                                     screen)
-                keys = pygame.key.get_pressed()
-                if keys[pygame.K_y]:
-                    game_state = GameStateName.NARVELIS_SCENE_23
+                # if character moves to a specific coordinate
+                if when_character_in_specific_coords(width_scale,
+                                                     height_scale,
+                                                     character,
+                                                     (730, 780),
+                                                     (30, 80)):
+                    text_btn.text_box_appear(screen)
+                    text_btn.update_text('')
+                    multi_text_btn.render_multiline_text('Would you like to Enter the Store?\n"Press "Y" to Enter',
+                                                         screen)
+                    keys = pygame.key.get_pressed()
+                    if keys[pygame.K_y]:
+                        game_state = GameStateName.STORE_SCENE_1
 
-        if game_state == GameStateName.NIGHTMARE_WORLD_MOVEMENT:
-            keys = pygame.key.get_pressed()
-            dx, dy = 0, 0
-            if keys[pygame.K_LEFT]:
-                dx = -5 * width_scale  # Move left
-            if keys[pygame.K_RIGHT]:
-                dx = 5 * width_scale  # Move right
-            if keys[pygame.K_UP]:
-                dy = -5 * width_scale  # Move up
-            if keys[pygame.K_DOWN]:
-                dy = 5 * width_scale  # Move down
-            if keys[pygame.K_LEFT] and keys[pygame.K_LSHIFT]:
-                dx = -15 * width_scale  # Move left FASTER
-            if keys[pygame.K_RIGHT] and keys[pygame.K_LSHIFT]:
-                dx = 15 * width_scale  # Move right FASTER
-            if keys[pygame.K_UP] and keys[pygame.K_LSHIFT]:
-                dy = -15 * width_scale  # Move up FASTER
-            if keys[pygame.K_DOWN] and keys[pygame.K_LSHIFT]:
-                dy = 15 * width_scale  # Move down FASTER
-            # Clear screen
-            screen.fill((0, 0, 0))
-            # Update character position
-            character.move(dx, dy)
-            main_char_pos = character.return_position()
-            enemy_char_pos = chasing_character.return_position()
+                if when_character_in_specific_coords(width_scale,
+                                                     height_scale,
+                                                     character,
+                                                     (370, 390),
+                                                     (270, 320)):
+                    text_btn.text_box_appear(screen)
+                    text_btn.update_text('')
+                    multi_text_btn.render_multiline_text('Go back home?\n"Press "Y" to Enter"',
+                                                         screen)
+                    keys = pygame.key.get_pressed()
+                    if keys[pygame.K_y]:
+                        game_state = GameStateName.NARVELIS_SCENE_23
 
-            chasing_character.chase(main_char_pos[0], main_char_pos[1], chase_speed=2)
+            elif game_state == GameStateName.NIGHTMARE_WORLD_MOVEMENT:
+                enemy_char_pos = None
+                # Clear screen
+                screen.fill((0, 0, 0))
+                # Update character position
+                character.move(dx, dy)
+                main_char_pos = character.return_position()
 
-            # Draw elements
-            background_manager.update_image_path('resources/main_map/night.jpg')
-            background_manager.draw_background(screen)
-            character.draw(screen)
-            chasing_character.draw(screen)
+                # Draw elements
+                background_manager.update_image_path('resources/main_map/night.jpg')
+                background_manager.draw_background(screen)
+                character.draw(screen)
 
-            if main_char_pos == enemy_char_pos:
-                game_state = GameStateName.GAME_OVER
+                # Update existing enemies
+                for enemy in enemies:
+                    enemy_char_pos = enemy.return_position()
+                    enemy.chase(main_char_pos[0], main_char_pos[1], chase_speed=3)
+                    enemy.draw(screen)
 
-            # if character moves to a specific coordinate
-            if when_character_in_specific_coords(width_scale,
-                                                 height_scale,
-                                                 character,
-                                                 (730, 780),
-                                                 (30, 80)):
-                text_btn.text_box_appear(screen)
-                text_btn.update_text('')
-                multi_text_btn.render_multiline_text('Would you like to SAVE YOURSELF NOW?\n'
-                                                     'Press "Y" to YES YES YES PLEASE',
-                                                     screen)
-                keys = pygame.key.get_pressed()
-                if keys[pygame.K_y]:
-                    game_state = GameStateName.BEDROOM_SCENE_12
+                # Create a new enemy every 10 seconds
+                current_time = datetime.datetime.now()
+                if (current_time - last_enemy_creation_time).total_seconds() >= 10:
+                    chasing_character = Character(screen_width // 3, screen_height // 3, screen_width, screen_height,
+                                                  enemy=True)
+                    enemies.append(chasing_character)
+                    last_enemy_creation_time = current_time
+
+                if main_char_pos == enemy_char_pos:
+                    game_state = GameStateName.GAME_OVER
+
+                # if character moves to a specific coordinate
+                if when_character_in_specific_coords(width_scale,
+                                                     height_scale,
+                                                     character,
+                                                     (730, 780),
+                                                     (30, 80)):
+                    text_btn.text_box_appear(screen)
+                    text_btn.update_text('')
+                    multi_text_btn.render_multiline_text('Would you like to SAVE YOURSELF NOW?\n'
+                                                         'Press "Y" to YES YES YES PLEASE',
+                                                         screen)
+                    keys = pygame.key.get_pressed()
+                    if keys[pygame.K_y]:
+                        game_state = GameStateName.BEDROOM_SCENE_12
 
         for event in pygame.event.get():
             # mouse coordinates printing
@@ -451,6 +452,7 @@ def start(screen, clock, settings, background_manager_loading, background_manage
                     text_btn.reset_animation()
                 elif game_state == GameStateName.GAME_OVER:
                     text_btn.reset_animation()
+                    savestate.delete_user(user_name)
                     return
                 elif game_state == GameStateName.KITCHEN_SCENE_1:
                     game_state = GameStateName.KITCHEN_SCENE_2
@@ -632,6 +634,8 @@ def start(screen, clock, settings, background_manager_loading, background_manage
                     game_state = GameStateName.SLEEP_SCENE_2
                 elif game_state == GameStateName.SLEEP_SCENE_2:
                     game_state = GameStateName.NIGHTMARE_WORLD_MOVEMENT
+                elif game_state == GameStateName.BEDROOM_SCENE_12:
+                    game_state = GameStateName.BEDROOM_SCENE_11
 
         # Screen drawing based on game state
         if game_state == GameStateName.INTRO_INPUT:
@@ -644,12 +648,12 @@ def start(screen, clock, settings, background_manager_loading, background_manage
             background_manager_loading.update_background_slideshow()
             background_manager_loading.draw_background(screen)
         elif game_state == GameStateName.MENU:
-            player_name = username_input_box.username if username_input_box.username else player_name
+            user_name = username_input_box.username if username_input_box.username else player_name
             background_manager.update_image_path('resources/main_map/night.jpg')
             background_manager.draw_background(screen)
         elif game_state == GameStateName.INTRO_SCENE_1:
             text_btn.text_box_appear(screen)
-            text_btn.update_text(f'Nice to meet you, {player_name}')
+            text_btn.update_text(f'Nice to meet you, {user_name}')
         elif game_state == GameStateName.INTRO_SCENE_2:
             text_btn.text_box_appear(screen)
             text_btn.update_text('Enjoy! :)')
@@ -1471,14 +1475,21 @@ def start(screen, clock, settings, background_manager_loading, background_manage
             screen.fill((0, 0, 0))
             text_btn.text_box_appear(screen)
             text_btn.update_text('Before long you\'re taking a sound afternoon nap.')
+        elif game_state == GameStateName.BEDROOM_SCENE_12:
+            screen.fill((0, 0, 0))
+            background_manager.update_image_path('resources/scene_backgrounds/bedroom.jpg')
+            background_manager.draw_background(screen)
+            text_btn.text_box_appear(screen)
+            text_btn.update_text('What the hell was that?')
 
         # Update the display, continously draw save, load, menu buttons and check their hovers
         background_manager.draw_filter(screen)
-        save_btn.draw(screen)
-        load_btn.draw(screen)
-        menu_btn.draw(screen)
-        save_btn.check_hover(screen)
-        load_btn.check_hover(screen)
-        menu_btn.check_hover(screen)
+        if not game_state == GameStateName.GAME_OVER:
+            save_btn.draw(screen)
+            load_btn.draw(screen)
+            menu_btn.draw(screen)
+            save_btn.check_hover(screen)
+            load_btn.check_hover(screen)
+            menu_btn.check_hover(screen)
         pygame.display.flip()
         clock.tick(FPS)

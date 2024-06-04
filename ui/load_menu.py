@@ -4,10 +4,8 @@ import pygame
 
 from ui.button import Button
 from ui.constants import FPS, RESOLUTIONS
-from ui.settings_menu import settings_menu
 from game import start
-from ui.utilities import calculate_position
-from save_states import savestate
+from database.save_states import savestate
 
 
 class LoadMenu:
@@ -37,17 +35,19 @@ class LoadMenu:
             for save in list_of_saves:
                 btn_o = Button((155 * self.width_scale),
                                (height * self.height_scale),
-                               f'{save[1]} {save[2]} {save[3]}', button_text_padding=4, button_size=(500, 50))
+                               f'{save[1]} {save[2]} {save[3]}',
+                               button_text_padding=4, button_size=(500 * self.width_scale, 50 * self.height_scale))
                 save_btn_list.append(btn_o)
                 height += 60
         else:
             no_saves_btn = Button((155 * self.width_scale),
                                   (120 * self.height_scale),
-                                  f'There are currently no saves!', button_text_padding=10, button_size=(500, 50))
+                                  f'There are currently no saves!', button_text_padding=10,
+                                  button_size=(500 * self.width_scale, 50 * self.height_scale))
 
         back_btn = Button((260 * self.width_scale),
                           (60 * self.height_scale),
-                          'Back',
+                          'Back', button_size=(300 * self.width_scale, 50 * self.height_scale),
                           )
         running = True
         while running:
@@ -71,6 +71,7 @@ class LoadMenu:
                             start(self.screen, self.clock, self.settings, self.background_manager_loading,
                                   self.background_manager, save_state=game_state,
                                   player_name=username)
+                            return
 
                 if back_btn.is_clicked(event):
                     return
