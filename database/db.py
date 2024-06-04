@@ -1,3 +1,9 @@
+"""
+db.py
+
+This module contains the SQLalchemy imports, engine, Session class.
+"""
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from .models import Base

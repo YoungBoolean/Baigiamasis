@@ -1,3 +1,10 @@
+"""
+game_menu.py
+
+This module contains the GameMenu class, which is responsible for drawing the main menu, main menu buttons.
+This is the entry point of what the user sees when they run the program.
+"""
+
 import sys
 
 import pygame
@@ -10,7 +17,11 @@ from .load_menu import LoadMenu
 
 
 class GameMenu:
-    """Game menu game loop class, responsible for drawing the main menu, button object creation"""
+    """
+    Game menu game loop class, responsible for drawing the main menu,
+    button object creation, entries to other menus
+    """
+
     def __init__(self, screen, clock, settings, background_manager, background_manager_loading):
         self.screen = screen
         self.clock = clock
@@ -20,7 +31,8 @@ class GameMenu:
         self.screen_width, self.screen_height = settings.current_resolution
         self.start()
 
-    def create_buttons(self) -> tuple:
+    def create_buttons(self):
+        """Creates buttons, to be used in the GameMenu loop"""
         original_width, original_height = RESOLUTIONS[0]
         width_scale = self.screen_width / original_width
         height_scale = self.screen_height / original_height
@@ -50,6 +62,7 @@ class GameMenu:
                     if event.key == pygame.K_ESCAPE:
                         return
 
+                # Starts the game if start_btn is clicked
                 if start_btn.is_clicked(event):
                     self.screen.fill((0, 0, 0))
                     start(self.screen, self.clock, self.settings, self.background_manager_loading,
@@ -57,17 +70,21 @@ class GameMenu:
                     self.background_manager_loading.update_screen_size(self.settings.current_resolution)
                     self.background_manager_loading.update_background_slideshow()
 
+                # Starts the load menu if load_btn is clicked
                 if load_btn.is_clicked(event):
                     LoadMenu(self.screen, self.clock, self.settings,
                              self.background_manager, self.background_manager_loading)
 
+                # Starts the settings menu if settings_btn is clicked
                 if settings_btn.is_clicked(event):
                     SettingsMenu(self.screen, self.clock, self.settings,
-                                  self.background_manager, self.background_manager_loading)
+                                 self.background_manager, self.background_manager_loading)
 
+            # Drawing of backgrounds
             self.background_manager_loading.update_background_slideshow()
             self.background_manager_loading.draw_background(self.screen)
 
+            # Drawing of buttons, filter
             load_btn.draw(self.screen)
             load_btn.check_hover(self.screen)
             start_btn.draw(self.screen)

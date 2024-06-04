@@ -1,8 +1,10 @@
-# Čia bus laikoma visi pasakotojo ir veikėjų tekstai.
-# Turime dict, kur yra laikoma scenų pavadinimai (pvz. Home, Store, Outside ir t.t.).
-# Scenos viduje yra laikomi visų veikėjų, pasakotojo tekstai listuose.
+"""
+game_text.py
 
-from ui.constants import USER_NAME
+This module contains all the texts of the narrator and the characters.
+We have a dict where scene names are stored (e.g. Home, Store, Outside, etc.).
+Inside the scene, the texts of all characters, narrator are stored in lists.
+"""
 
 story_text = {
     "HomeRoom": {
@@ -100,7 +102,7 @@ story_text = {
              "You pay with the pigeon money. Well, when life gives you lemons..."],
         "player":
             ["\"Good afternoon, a Camel Blue please.\"", "\"I'm sorry but I seem to have no money on me, "
-                                                     "can i buy the cigarretes now and return later with the money?\"",
+                                                         "can i buy the cigarretes now and return later with the money?\"",
              "\"Pretty please, I swear I'll return with the money.\""],
         "kasininke":
             ["\"Certainly, that'll be X amount of currency.\"", "\"I'm sorry sir but no, you'll need to pay NOW.\"",

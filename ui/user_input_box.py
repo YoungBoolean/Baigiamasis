@@ -1,8 +1,16 @@
+"""
+user_input_box.py
+
+This module contains the InputBox class, it is responsbile for drawing the characters, which the user enters, on screen.
+"""
+
 import pygame
-from ui.constants import FONT_PATH, BUTTON_FILE_PATH, TEXT_FONT_PATH, USER_NAME, WHITE, BLACK, GREEN, DARK_GREEN, GRAY
+from ui.constants import TEXT_FONT_PATH, WHITE, BLACK
 
 
 class InputBox:
+    """InputBox class, responsible for drawing the user entered characters, i.e. Username, on screen."""
+
     def __init__(self, x, y, w, h, text='', max_font_size=24,
                  font_path=TEXT_FONT_PATH):
         self.rect = pygame.Rect(x, y, w, h)
@@ -13,6 +21,7 @@ class InputBox:
         self.username = None
 
     def handle_event(self, event):
+        """Takes an event, checks if it's valid and saves the characters entered."""
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:
                 self.username = self.text  # Save the entered username
@@ -27,11 +36,10 @@ class InputBox:
             self.text_surf = self.font.render(self.text, True, BLACK)
 
     def update(self):
-        # Resize the box if the text is too long.
+        """Resizes the box if the text is too long."""
         width = max(200, self.text_surf.get_width() + 10)
         self.rect.w = width
 
     def draw(self, screen):
-        # Blit the text.
+        """Renders the text."""
         screen.blit(self.text_surf, (self.rect.x + 5, self.rect.y + 5))
-        # Blit the rect.

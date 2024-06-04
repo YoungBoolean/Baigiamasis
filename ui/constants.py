@@ -1,3 +1,11 @@
+"""
+constants.py
+
+This module contains the constants, such as RESOLUTIONS, FPS, USER_NAME, GAME_NAME, BACKGROUND_IMAGE_PATH,
+FONT_PATH, CHARACTER_WIDTH, CHARACTER_HEIGHT, NON_WALKABLE_AREAS and a class GameStateName. Which just stores the names
+of game states. Used for convenience, because pycharm shows the full list of available names this way.
+"""
+
 import pygame
 
 # Constants

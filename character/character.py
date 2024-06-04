@@ -1,3 +1,10 @@
+"""
+character.py
+
+This module contains the Character class, which is responsible for creation of character objects,
+character movement logic, drawing of character sprites, collision detection.
+"""
+
 import pygame
 from ui.constants import CHARACTER_WIDTH, CHARACTER_HEIGHT, NON_WALKABLE_AREAS, SPRITE_PATH_LIST, ENEMY_SPRITE_PATH_LIST
 
@@ -7,9 +14,10 @@ class Character:
     Responsible for creation of character objects, character movement logic,
     drawing of character sprites, collision detection.
     """
+
     def __init__(self, x, y, screen_width, screen_height, sprite_path=SPRITE_PATH_LIST,
                  enemy_sprite_path=ENEMY_SPRITE_PATH_LIST, enemy=False):
-        self.enemy = enemy
+        self.enemy = enemy  # specify if you want the character to have enemy characteristics
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.width_scale = self.screen_width / 800  # original width
@@ -27,6 +35,7 @@ class Character:
         self.flipped_image = pygame.transform.flip(self.image, True, False)  # Flip the sprite
 
     def move(self, dx, dy):
+        """Moves the character to specified coordinates"""
         new_rect = self.rect.move(dx, dy)
         if not self.enemy:
             if dx >= 5 * self.width_scale:
@@ -43,6 +52,8 @@ class Character:
                                                     (self.character_width, self.character_height))
                 if self.sprite_index >= 2:
                     self.sprite_index = 0
+
+        # If the character is an 'enemy' character, changes movement speed, changes character image, animations
         if self.enemy:
             if dx >= 3 * self.width_scale:
                 self.sprite_index += 1
@@ -63,10 +74,15 @@ class Character:
             self.rect = new_rect
 
     def is_within_bounds(self, rect):
+        """Checks whether the character is within the bounds of the game screen"""
         return (rect.left >= 0 and rect.right <= self.screen_width and rect.top >= 0
                 and rect.bottom <= self.screen_height)
 
     def collides_with_non_walkable(self, rect):
+        """
+        Handles collisions, when character coordinates touch the specified coordinates
+        The character can't move.
+        """
         for area in NON_WALKABLE_AREAS:
             scaled_rect = pygame.Rect(
                 area.x * self.width_scale,
@@ -79,9 +95,11 @@ class Character:
         return False
 
     def draw(self, screen):
+        """Draws the character image"""
         screen.blit(self.image, self.rect.topleft)
 
     def return_position(self):
+        """Returns character current position"""
         return self.rect.topleft
 
     def chase(self, target_x, target_y, chase_speed):

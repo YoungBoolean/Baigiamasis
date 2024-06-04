@@ -1,7 +1,7 @@
 """
 game.py
 
-This module contains the start function, which is responsible for running, managing the main game loop and it's logic.
+This module contains the start function, which is responsible for running, managing the Main game loop and it's logic.
 """
 
 import datetime
@@ -19,10 +19,9 @@ from database.save_states import savestate
 from game_states import GameState
 
 
-# Starts the main game loop
 def start(screen, clock, settings, background_manager_loading, background_manager,
           save_state=GameStateName.LOADING_SCREEN, player_name=USER_NAME):
-    # Setup screen resolution and scaling
+    """Starts the main game loop and sets up screen resolution and scaling"""
     screen_width, screen_height = settings.current_resolution
     original_width, original_height = RESOLUTIONS[0]
     width_scale = screen_width / original_width
@@ -105,7 +104,7 @@ def start(screen, clock, settings, background_manager_loading, background_manage
     character = Character(screen_width // 2, screen_height // 2, screen_width, screen_height)
     chasing_character = Character(screen_width // 3, screen_height // 3, screen_width, screen_height, enemy=True)
 
-    # Initialize miscelenious operators, checkers, lists
+    # Initialize miscellaneous operators, checkers, lists
     pigeon_money_taken = False
     camel_blue_received = False
     last_enemy_creation_time = datetime.datetime.now()
@@ -121,7 +120,6 @@ def start(screen, clock, settings, background_manager_loading, background_manage
 
     while running:
         random_number_generator = randint(1, 10)
-        choice_made = False
 
         if game_state == GameStateName.WORLD_MOVEMENT or GameStateName.NIGHTMARE_WORLD_MOVEMENT:
             keys = pygame.key.get_pressed()
@@ -229,7 +227,7 @@ def start(screen, clock, settings, background_manager_loading, background_manage
                         game_state = GameStateName.BEDROOM_SCENE_12
 
         for event in pygame.event.get():
-            # mouse coordinates printing
+            # Mouse coordinates printing
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 print("Mouse clicked at:", mouse_pos)
@@ -241,7 +239,7 @@ def start(screen, clock, settings, background_manager_loading, background_manage
                 if event.key == pygame.K_ESCAPE:
                     return
 
-            # Button clicks
+            # Main Button clicks (save, load, menu)
             if save_btn.is_clicked(event):
                 savestate.save_game(f"{game_state}", user_name)
             if load_btn.is_clicked(event):
@@ -259,66 +257,8 @@ def start(screen, clock, settings, background_manager_loading, background_manage
                 if event.type == pygame.KEYDOWN and (event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER):
                     game_state = GameStateName.MENU
 
-            # Game state specific button handling
-            if game_state in [GameStateName.BEDROOM_SCENE_3, GameStateName.BEDROOM_SCENE_5]:
-                if choice_btn_1.is_clicked(event):
-                    game_state = GameStateName.BALCONY_SCENE_1
-                    text_btn.reset_animation()
-                    choice_made = True
-                elif choice_btn_2.is_clicked(event):
-                    game_state = GameStateName.KITCHEN_SCENE_1
-                    text_btn.reset_animation()
-                    choice_made = True
-                elif choice_btn_3.is_clicked(event):
-                    game_state = GameStateName.BATHROOM_SCENE_1
-                    text_btn.reset_animation()
-                    choice_made = True
-
-            if game_state == GameStateName.BALCONY_SCENE_3:
-                if choice_btn_1.is_clicked(event):
-                    game_state = GameStateName.BEDROOM_SCENE_4
-                    text_btn.reset_animation()
-                    choice_made = True
-                elif choice_btn_2.is_clicked(event):
-                    game_state = GameStateName.BALCONY_SCENE_4
-                    text_btn.reset_animation()
-                    choice_made = True
-                elif choice_btn_3.is_clicked(event):
-                    game_state = GameStateName.BALCONY_SCENE_5
-                    text_btn.reset_animation()
-                    choice_made = True
-
-            if game_state == GameStateName.KITCHEN_SCENE_4:
-                if choice_btn_1.is_clicked(event):
-                    game_state = GameStateName.KITCHEN_SCENE_5
-                    text_btn.reset_animation()
-                    choice_made = True
-                elif choice_btn_2.is_clicked(event):
-                    game_state = GameStateName.KITCHEN_SCENE_7
-                    text_btn.reset_animation()
-                    choice_made = True
-                elif choice_btn_3.is_clicked(event):
-                    game_state = GameStateName.LAIPTINE_SCENE_1
-                    text_btn.reset_animation()
-                    choice_made = True
-                elif choice_btn_4.is_clicked(event):
-                    game_state = GameStateName.BEDROOM_SCENE_4
-                    text_btn.reset_animation()
-                    choice_made = True
-
-            if game_state == GameStateName.NARVELIS_SCENE_7:
-                if choice_btn_1.is_clicked(event):
-                    game_state = GameStateName.NARVELIS_SCENE_15
-                    text_btn.reset_animation()
-                    choice_made = True
-                elif choice_btn_2.is_clicked(event):
-                    game_state = GameStateName.NARVELIS_SCENE_8
-                    text_btn.reset_animation()
-                    choice_made = True
-                elif choice_btn_3.is_clicked(event):
-                    game_state = GameStateName.WORLD_MOVEMENT
-                    text_btn.reset_animation()
-                    choice_made = True
+            # Game state specific choice button handling
+            choice_made, game_state = game_state_object.handle_choice_button_game_states(game_state, event)
 
             if game_state == GameStateName.STORE_SCENE_6:
                 if choice_btn_1.is_clicked(event):
@@ -342,52 +282,6 @@ def start(screen, clock, settings, background_manager_loading, background_manage
                     choice_made = True
                 elif choice_btn_2.is_clicked(event):
                     game_state = GameStateName.STORE_SCENE_13
-                    text_btn.reset_animation()
-                    choice_made = True
-
-            if game_state == GameStateName.STORE_SCENE_20:
-                if choice_btn_1.is_clicked(event):
-                    game_state = GameStateName.WORLD_MOVEMENT
-                    text_btn.reset_animation()
-                    choice_made = True
-                elif choice_btn_2.is_clicked(event):
-                    game_state = GameStateName.STORE_SCENE_21
-                    text_btn.reset_animation()
-                    choice_made = True
-
-            if game_state == GameStateName.BEDROOM_SCENE_11:
-                if choice_btn_1.is_clicked(event):
-                    game_state = GameStateName.BALCONY_SCENE_7
-                    text_btn.reset_animation()
-                    choice_made = True
-                elif choice_btn_2.is_clicked(event):
-                    game_state = GameStateName.KITCHEN_SCENE_9
-                    text_btn.reset_animation()
-                    choice_made = True
-                elif choice_btn_3.is_clicked(event):
-                    game_state = GameStateName.BATHROOM_SCENE_3
-                    text_btn.reset_animation()
-                    choice_made = True
-                elif choice_btn_4.is_clicked(event):
-                    game_state = GameStateName.SLEEP_SCENE_1
-                    text_btn.reset_animation()
-                    choice_made = True
-
-            if game_state == GameStateName.KITCHEN_SCENE_10:
-                if choice_btn_1.is_clicked(event):
-                    game_state = GameStateName.KITCHEN_SCENE_11
-                    text_btn.reset_animation()
-                    choice_made = True
-                elif choice_btn_2.is_clicked(event):
-                    game_state = GameStateName.WORLD_MOVEMENT
-                    text_btn.reset_animation()
-                    choice_made = True
-                elif choice_btn_3.is_clicked(event):
-                    game_state = GameStateName.BEDROOM_SCENE_11
-                    text_btn.reset_animation()
-                    choice_made = True
-                elif choice_btn_4.is_clicked(event):
-                    game_state = GameStateName.KITCHEN_SCENE_12
                     text_btn.reset_animation()
                     choice_made = True
 
@@ -418,18 +312,6 @@ def start(screen, clock, settings, background_manager_loading, background_manage
                         choice_made = True
                     text_btn.reset_animation()
 
-            if game_state == GameStateName.BATHROOM_SCENE_2:
-                if choice_btn_1.is_clicked(event):
-                    game_state = GameStateName.BEDROOM_SCENE_4
-                    text_btn.reset_animation()
-                    choice_made = True
-
-            if game_state == GameStateName.BATHROOM_SCENE_4:
-                if choice_btn_1.is_clicked(event):
-                    game_state = GameStateName.BEDROOM_SCENE_11
-                    text_btn.reset_animation()
-                    choice_made = True
-
             # Space or Mouse click events for advancing the game state
             if not choice_made and (event.type == pygame.MOUSEBUTTONDOWN or (
                     event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE)):
@@ -440,6 +322,9 @@ def start(screen, clock, settings, background_manager_loading, background_manage
                     user_name = username_input_box.username if username_input_box.username else player_name
                     game_state = GameStateName.INTRO_SCENE_1
                     text_btn.reset_animation()
+                elif game_state == GameStateName.BEDROOM_SCENE_12:
+                    character.move(-20, 0)
+                    game_state = GameStateName.BEDROOM_SCENE_11
                 elif game_state == GameStateName.GAME_OVER:
                     text_btn.reset_animation()
                     savestate.delete_user(user_name)

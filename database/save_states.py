@@ -1,15 +1,27 @@
+"""
+save_states.py
+
+This module contains SQLAlchemy imports.
+This module provides functionality related to saving game states in the database.
+"""
+
 from .db import session
 from .models import SaveFile, User
 
 
 class SaveState:
     """Responsible for creating database queries, returning save_game rows from database"""
+
     def __init__(self, session=session, user=User, savefile=SaveFile):
         self.session = session
         self.user = user
         self.savefile = savefile
 
     def save_game(self, game_stage, user_name):
+        """
+        Saves the current game state for the specified user. If user does not exist in the database,
+        it is created and the game is saved to it.
+        """
         rows_users = self.session.query(self.user).all()
         user_found = False
 
@@ -34,6 +46,10 @@ class SaveState:
             print("Game saved!")
 
     def get_saved_games(self):
+        """
+        Returns saved games from the database.
+        The saved games are filtered by user and ordered in a descending order
+        """
         savegame_list = []
         rows_users = self.session.query(self.user).all()
         for row in rows_users:
@@ -45,6 +61,7 @@ class SaveState:
         return savegame_list if savegame_list else None
 
     def get_last_save(self):
+        """Returns the last saved game from the database."""
         last_save = self.session.query(self.savefile).order_by(self.savefile.id.desc()).first()
         if last_save:
             savegame = last_save.game_stage
@@ -56,7 +73,7 @@ class SaveState:
         return None, None
 
     def delete_user(self, username):
-        """Delete user and it's save files when game over or delete user button is pressed"""
+        """Deletes user and it's save files when the game_state is game_over"""
         user_to_delete = self.session.query(self.user).filter_by(user_name=username).first()
         if user_to_delete:
             self.session.delete(user_to_delete)

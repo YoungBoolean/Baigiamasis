@@ -1,9 +1,16 @@
+"""
+button.py
+
+This module contains the Button class, which is responsbile for the creation, drawing, and
+functionality of pygame buttons.
+"""
+
 import pygame
 from ui.constants import FONT_PATH, BUTTON_FILE_PATH
 
 
 class Button:
-    """Button class - responsible for the creation, drawing, and functionality of buttons"""
+    """Button class - responsible for the creation, drawing, and functionality of buttons."""
 
     def __init__(self, x, y,
                  text='',
@@ -33,16 +40,16 @@ class Button:
         self.animation_done = False
         self.go_back = False
 
-    def get_button_size(self) -> tuple:
+    def get_button_size(self):
         """Returns the size of the button"""
         return self.button_size
 
-    def draw(self, screen) -> None:
+    def draw(self, screen):
         """Draw the button and the text centered on it."""
         screen.blit(self.image, self.rect)
         screen.blit(self.text_surf, self.text_rect)
 
-    def check_hover(self, screen, repeat=True) -> None:
+    def check_hover(self, screen, repeat=True):
         """Check if the mouse is hovering over the button and change the image accordingly."""
         max_hover_button_file_index = 18
         if self.rect.collidepoint(pygame.mouse.get_pos()):
@@ -64,7 +71,7 @@ class Button:
                     if self.hover_button_file_counter >= max_hover_button_file_index:
                         self.go_back = True
 
-    def text_box_appear(self, screen, file_path='resources/button/text_button_animation/', max_index=14) -> None:
+    def text_box_appear(self, screen, file_path='resources/button/text_button_animation/', max_index=14):
         """Animate the appearance of the text_box button"""
         if not self.animation_done:
             filename = f"{self.hover_button_file_counter}.png"
@@ -82,7 +89,7 @@ class Button:
         screen.blit(image, self.rect)
         screen.blit(self.text_surf, self.text_rect)
 
-    def update_text(self, text: str) -> tuple:
+    def update_text(self, text: str):
         """Update the text and adjust font size if the text is too long."""
         self.text = text
         font_size = self.max_font_size
@@ -100,9 +107,10 @@ class Button:
         self.text_surf = text_surf
         return text_surf, text_rect
 
-    def render_multiline_text(self, text, screen, line_spacing=1.5, color=(0, 0, 0)) -> None:
+    def render_multiline_text(self, text, screen, line_spacing=1.5, color=(0, 0, 0)):
         """Render multi-line text to a pygame surface."""
         words = [word.split(' ') for word in text.splitlines()]
+        word_height = None
         space_width, space_height = self.font.size(' ')
         x, y = self.rect.topleft
         max_width, max_height = self.rect.size
@@ -119,16 +127,16 @@ class Button:
             x = self.rect.left
             y += word_height * line_spacing
 
-    def reset_animation(self) -> None:
+    def reset_animation(self):
         """Reset the animation of the button"""
         self.hover_button_file_counter = 1
         self.animation_done = False
 
-    def play_button_sound(self) -> None:
+    def play_button_sound(self):
         """Play sound when button is clicked, used by is_clicked method"""
         self.button_sound.play()
 
-    def is_clicked(self, event) -> bool:
+    def is_clicked(self, event):
         """
         Check if the button is clicked, return true if clicked when mouse is hovering over button,
         else return false

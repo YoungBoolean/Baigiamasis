@@ -4,10 +4,7 @@ game_states.py
 This module contains class GameState, which handles the drawing and logic of game_states.
 """
 
-import pygame
-
-from database.save_states import savestate
-from ui.constants import GameStateName, USER_NAME, LOADING_IMAGE_PATH_LIST
+from ui.constants import GameStateName, LOADING_IMAGE_PATH_LIST
 from ui.game_text import story_text
 
 
@@ -31,116 +28,207 @@ class GameState:
         self.choice_btn_3 = choice_btn_3
         self.choice_btn_4 = choice_btn_4
 
+    def handle_choice_button_game_states(self, game_state, event):
+        """Handles game states with multiple choices"""
+        choice_made = False
+        if game_state in [GameStateName.BEDROOM_SCENE_3, GameStateName.BEDROOM_SCENE_5]:
+            if self.choice_btn_1.is_clicked(event):
+                game_state = GameStateName.BALCONY_SCENE_1
+                self.text_btn.reset_animation()
+                choice_made = True
+            elif self.choice_btn_2.is_clicked(event):
+                game_state = GameStateName.KITCHEN_SCENE_1
+                self.text_btn.reset_animation()
+                choice_made = True
+            elif self.choice_btn_3.is_clicked(event):
+                game_state = GameStateName.BATHROOM_SCENE_1
+                self.text_btn.reset_animation()
+                choice_made = True
+
+        if game_state == GameStateName.BALCONY_SCENE_3:
+            if self.choice_btn_1.is_clicked(event):
+                game_state = GameStateName.BEDROOM_SCENE_4
+                self.text_btn.reset_animation()
+                choice_made = True
+            elif self.choice_btn_2.is_clicked(event):
+                game_state = GameStateName.BALCONY_SCENE_4
+                self.text_btn.reset_animation()
+                choice_made = True
+            elif self.choice_btn_3.is_clicked(event):
+                game_state = GameStateName.BALCONY_SCENE_5
+                self.text_btn.reset_animation()
+                choice_made = True
+
+        if game_state == GameStateName.KITCHEN_SCENE_4:
+            if self.choice_btn_1.is_clicked(event):
+                game_state = GameStateName.KITCHEN_SCENE_5
+                self.text_btn.reset_animation()
+                choice_made = True
+            elif self.choice_btn_2.is_clicked(event):
+                game_state = GameStateName.KITCHEN_SCENE_7
+                self.text_btn.reset_animation()
+                choice_made = True
+            elif self.choice_btn_3.is_clicked(event):
+                game_state = GameStateName.LAIPTINE_SCENE_1
+                self.text_btn.reset_animation()
+                choice_made = True
+            elif self.choice_btn_4.is_clicked(event):
+                game_state = GameStateName.BEDROOM_SCENE_4
+                self.text_btn.reset_animation()
+                choice_made = True
+
+        if game_state == GameStateName.NARVELIS_SCENE_7:
+            if self.choice_btn_1.is_clicked(event):
+                game_state = GameStateName.NARVELIS_SCENE_15
+                self.text_btn.reset_animation()
+                choice_made = True
+            elif self.choice_btn_2.is_clicked(event):
+                game_state = GameStateName.NARVELIS_SCENE_8
+                self.text_btn.reset_animation()
+                choice_made = True
+            elif self.choice_btn_3.is_clicked(event):
+                game_state = GameStateName.WORLD_MOVEMENT
+                self.text_btn.reset_animation()
+                choice_made = True
+
+        if game_state == GameStateName.STORE_SCENE_20:
+            if self.choice_btn_1.is_clicked(event):
+                game_state = GameStateName.WORLD_MOVEMENT
+                self.text_btn.reset_animation()
+                choice_made = True
+            elif self.choice_btn_2.is_clicked(event):
+                game_state = GameStateName.STORE_SCENE_21
+                self.text_btn.reset_animation()
+                choice_made = True
+
+        if game_state == GameStateName.BEDROOM_SCENE_11:
+            if self.choice_btn_1.is_clicked(event):
+                game_state = GameStateName.BALCONY_SCENE_7
+                self.text_btn.reset_animation()
+                choice_made = True
+            elif self.choice_btn_2.is_clicked(event):
+                game_state = GameStateName.KITCHEN_SCENE_9
+                self.text_btn.reset_animation()
+                choice_made = True
+            elif self.choice_btn_3.is_clicked(event):
+                game_state = GameStateName.BATHROOM_SCENE_3
+                self.text_btn.reset_animation()
+                choice_made = True
+            elif self.choice_btn_4.is_clicked(event):
+                game_state = GameStateName.SLEEP_SCENE_1
+                self.text_btn.reset_animation()
+                choice_made = True
+
+        if game_state == GameStateName.KITCHEN_SCENE_10:
+            if self.choice_btn_1.is_clicked(event):
+                game_state = GameStateName.KITCHEN_SCENE_11
+                self.text_btn.reset_animation()
+                choice_made = True
+            elif self.choice_btn_2.is_clicked(event):
+                game_state = GameStateName.WORLD_MOVEMENT
+                self.text_btn.reset_animation()
+                choice_made = True
+            elif self.choice_btn_3.is_clicked(event):
+                game_state = GameStateName.BEDROOM_SCENE_11
+                self.text_btn.reset_animation()
+                choice_made = True
+            elif self.choice_btn_4.is_clicked(event):
+                game_state = GameStateName.KITCHEN_SCENE_12
+                self.text_btn.reset_animation()
+                choice_made = True
+
+        if game_state == GameStateName.BATHROOM_SCENE_2:
+            if self.choice_btn_1.is_clicked(event):
+                game_state = GameStateName.BEDROOM_SCENE_4
+                self.text_btn.reset_animation()
+                choice_made = True
+
+        if game_state == GameStateName.BATHROOM_SCENE_4:
+            if self.choice_btn_1.is_clicked(event):
+                game_state = GameStateName.BEDROOM_SCENE_11
+                self.text_btn.reset_animation()
+                choice_made = True
+
+        return choice_made, game_state
+
     def handle_game_state(self, game_state,
                           random_number_generator):
+        """Handles linear game states"""
+        self.text_btn.reset_animation()
         game_state = game_state
         if game_state == GameStateName.LOADING_SCREEN:
             game_state = GameStateName.INTRO_INPUT
         elif game_state == GameStateName.INTRO_SCENE_1:
             game_state = GameStateName.INTRO_SCENE_2
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.INTRO_SCENE_2:
             game_state = GameStateName.INTRO_SCENE_3
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.INTRO_SCENE_3:
             game_state = GameStateName.INTRO_SCENE_4
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.INTRO_SCENE_4:
             game_state = GameStateName.INTRO_SCENE_5
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.INTRO_SCENE_5:
             game_state = GameStateName.BEDROOM_SCENE_1
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.BEDROOM_SCENE_1:
             game_state = GameStateName.BEDROOM_SCENE_2
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.BEDROOM_SCENE_2:
             game_state = GameStateName.BEDROOM_SCENE_3
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.BEDROOM_SCENE_4:
             game_state = GameStateName.BEDROOM_SCENE_5
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.BALCONY_SCENE_1:
             game_state = GameStateName.BALCONY_SCENE_2
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.BALCONY_SCENE_2:
             game_state = GameStateName.BALCONY_SCENE_3
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.BALCONY_SCENE_4:
             game_state = GameStateName.BALCONY_SCENE_2
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.BALCONY_SCENE_5:
             game_state = GameStateName.GAME_OVER
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.KITCHEN_SCENE_1:
             game_state = GameStateName.KITCHEN_SCENE_2
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.KITCHEN_SCENE_2:
             game_state = GameStateName.KITCHEN_SCENE_3
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.KITCHEN_SCENE_3:
             game_state = GameStateName.KITCHEN_SCENE_4
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.KITCHEN_SCENE_5:
             game_state = GameStateName.KITCHEN_SCENE_6
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.KITCHEN_SCENE_6:
             game_state = GameStateName.KITCHEN_SCENE_4
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.KITCHEN_SCENE_7:
             game_state = GameStateName.KITCHEN_SCENE_8
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.KITCHEN_SCENE_8:
             game_state = GameStateName.KITCHEN_SCENE_4
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.LAIPTINE_SCENE_1:
             game_state = GameStateName.LAIPTINE_SCENE_2
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.LAIPTINE_SCENE_2:
             if random_number_generator < 5:
                 game_state = GameStateName.LAIPTINE_SCENE_3
             else:
                 game_state = GameStateName.LAIPTINE_SCENE_4
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.LAIPTINE_SCENE_3:
             game_state = GameStateName.NARVELIS_SCENE_1
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.LAIPTINE_SCENE_4:
             game_state = GameStateName.LAIPTINE_SCENE_5
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.LAIPTINE_SCENE_5:
             game_state = GameStateName.LAIPTINE_SCENE_6
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.LAIPTINE_SCENE_6:
             game_state = GameStateName.NARVELIS_SCENE_1
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.NARVELIS_SCENE_1:
             game_state = GameStateName.NARVELIS_SCENE_2
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.NARVELIS_SCENE_1:
             game_state = GameStateName.NARVELIS_SCENE_2
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.NARVELIS_SCENE_2:
             game_state = GameStateName.NARVELIS_SCENE_3
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.NARVELIS_SCENE_3:
             game_state = GameStateName.NARVELIS_SCENE_4
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.NARVELIS_SCENE_4:
             game_state = GameStateName.NARVELIS_SCENE_5
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.NARVELIS_SCENE_5:
             game_state = GameStateName.NARVELIS_SCENE_6
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.NARVELIS_SCENE_6:
             game_state = GameStateName.NARVELIS_SCENE_7
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.NARVELIS_SCENE_8:
             game_state = GameStateName.NARVELIS_SCENE_9
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.NARVELIS_SCENE_9:
             game_state = GameStateName.NARVELIS_SCENE_10
-            self.text_btn.reset_animation()
         elif game_state == GameStateName.NARVELIS_SCENE_10:
             game_state = GameStateName.NARVELIS_SCENE_7
         elif game_state == GameStateName.NARVELIS_SCENE_11:
@@ -245,8 +333,7 @@ class GameState:
             game_state = GameStateName.SLEEP_SCENE_2
         elif game_state == GameStateName.SLEEP_SCENE_2:
             game_state = GameStateName.NIGHTMARE_WORLD_MOVEMENT
-        elif game_state == GameStateName.BEDROOM_SCENE_12:
-            game_state = GameStateName.BEDROOM_SCENE_11
+
         return game_state
 
     def handle_game_state_drawing(self, game_state):

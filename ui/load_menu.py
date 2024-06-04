@@ -1,3 +1,9 @@
+"""
+load_menu.py
+
+This module contains the LoadMenu class, it is responsbile for drawing the load menu, listing of save files.
+"""
+
 import sys
 
 import pygame
@@ -9,7 +15,7 @@ from database.save_states import savestate
 
 
 class LoadMenu:
-    """Game menu game loop class, responsible for drawing the main menu, button object creation"""
+    """Game menu game loop class, responsible for drawing the load menu and it's button object creation"""
 
     def __init__(self, screen, clock, settings, background_manager, background_manager_loading, save_state=savestate):
         self.screen = screen
@@ -32,7 +38,7 @@ class LoadMenu:
         list_of_saves = self.save_state.get_saved_games()
         if list_of_saves:
             height = 120
-            for save in list_of_saves:
+            for save in list_of_saves:  # Creates buttons with save file information if any saves exist
                 btn_o = Button((155 * self.width_scale),
                                (height * self.height_scale),
                                f'{save[1]} {save[2]} {save[3]}',
@@ -65,16 +71,15 @@ class LoadMenu:
                         if saves_btn.is_clicked(event):
                             username = saves_btn.text.split()[0]
                             game_state = saves_btn.text.split()[1]
-                            print(username)
-                            print(game_state)
                             self.screen.fill((0, 0, 0))
+                            # Starts the game from the selected save file
                             start(self.screen, self.clock, self.settings, self.background_manager_loading,
                                   self.background_manager, save_state=game_state,
                                   player_name=username)
-                            return
+                            return  # Returns back to main menu once main game loop is completed, terminated.
 
                 if back_btn.is_clicked(event):
-                    return
+                    return  # Returns back to main menu
 
             self.background_manager_loading.update_background_slideshow()
             self.background_manager_loading.draw_background(self.screen)
