@@ -120,6 +120,7 @@ def start(screen, clock, settings, background_manager_loading, background_manage
 
     while running:
         random_number_generator = randint(1, 10)
+        choice_made = False
 
         if game_state == GameStateName.WORLD_MOVEMENT or GameStateName.NIGHTMARE_WORLD_MOVEMENT:
             keys = pygame.key.get_pressed()
@@ -258,87 +259,21 @@ def start(screen, clock, settings, background_manager_loading, background_manage
                     game_state = GameStateName.MENU
 
             # Game state specific choice button handling
-            choice_made, game_state = game_state_object.handle_choice_button_game_states(game_state, event)
-
-            if game_state == GameStateName.STORE_SCENE_6:
-                if choice_btn_1.is_clicked(event):
-                    if pigeon_money_taken:
-                        game_state = GameStateName.STORE_SCENE_26
-                    else:
-                        game_state = GameStateName.STORE_SCENE_7
-                        text_btn.reset_animation()
-                        choice_made = True
-                elif choice_btn_2.is_clicked(event):
-                    character.move(-20, 0)
-                    game_state = GameStateName.WORLD_MOVEMENT
-                    text_btn.reset_animation()
-                    choice_made = True
-
-            if game_state == GameStateName.STORE_SCENE_12:
-                if choice_btn_1.is_clicked(event):
-                    character.move(-20, 0)
-                    game_state = GameStateName.WORLD_MOVEMENT
-                    text_btn.reset_animation()
-                    choice_made = True
-                elif choice_btn_2.is_clicked(event):
-                    game_state = GameStateName.STORE_SCENE_13
-                    text_btn.reset_animation()
-                    choice_made = True
-
-            if game_state == GameStateName.BALCONY_SCENE_8:
-                if choice_btn_1.is_clicked(event):
-                    game_state = GameStateName.BEDROOM_SCENE_11
-                    text_btn.reset_animation()
-                    choice_made = True
-                elif choice_btn_2.is_clicked(event):
-                    if camel_blue_received:
-                        game_state = GameStateName.BALCONY_SCENE_12
-                        text_btn.reset_animation()
-                        choice_made = True
-                    else:
-                        game_state = GameStateName.BALCONY_SCENE_9
-                        text_btn.reset_animation()
-                        choice_made = True
-                elif choice_btn_3.is_clicked(event):
-                    game_state = GameStateName.BALCONY_SCENE_5
-                    text_btn.reset_animation()
-                    choice_made = True
-                elif choice_btn_4.is_clicked(event):
-                    if pigeon_money_taken:
-                        text_btn.text_box_appear(screen)
-                        text_btn.update_text('There is no more money in the pigeon nest')
-                    else:
-                        game_state = GameStateName.BALCONY_SCENE_10
-                        choice_made = True
-                    text_btn.reset_animation()
+            choice_made, game_state, pigeon_money_taken, camel_blue_received = game_state_object.handle_choice_button_game_states(
+                game_state, event, choice_made,
+                pigeon_money_taken,
+                camel_blue_received,
+                character)
 
             # Space or Mouse click events for advancing the game state
             if not choice_made and (event.type == pygame.MOUSEBUTTONDOWN or (
                     event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE)):
-
-                game_state = game_state_object.handle_game_state(game_state, random_number_generator)
-
-                if game_state == GameStateName.MENU:
-                    user_name = username_input_box.username if username_input_box.username else player_name
-                    game_state = GameStateName.INTRO_SCENE_1
-                    text_btn.reset_animation()
-                elif game_state == GameStateName.BEDROOM_SCENE_12:
-                    character.move(-20, 0)
-                    game_state = GameStateName.BEDROOM_SCENE_11
-                elif game_state == GameStateName.GAME_OVER:
-                    text_btn.reset_animation()
-                    savestate.delete_user(user_name)
-                    return
-                elif game_state == GameStateName.STORE_SCENE_29:
-                    camel_blue_received = True
-                    game_state = GameStateName.WORLD_MOVEMENT
-                elif game_state == GameStateName.BALCONY_SCENE_11:
-                    pigeon_money_taken = True
-                    game_state = GameStateName.BALCONY_SCENE_8
-                elif game_state == GameStateName.GAME_COMPLETED:
+                game_state, user_name, camel_blue_received, pigeon_money_taken = game_state_object.handle_game_state(
+                    game_state, random_number_generator, user_name, character, camel_blue_received, pigeon_money_taken)
+                if game_state is None and user_name is None and camel_blue_received is None and pigeon_money_taken is None:
                     return
 
-        # Screen drawing based on game state
+                    # Screen drawing based on game state
         game_state_object.handle_game_state_drawing(game_state)
 
         # Update the display, continously draw save, load, menu buttons and check their hovers
