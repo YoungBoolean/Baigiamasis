@@ -6,6 +6,7 @@ The game was written in Python using the pygame library. It also uses SQLAlchemy
 At this moment it only serves as a demo for it's functionality as well as to demonstrate the creator's skill in writing code.
 
 Functionality:
+
   Immersive Storyline: Follow a gripping narrative that unfolds based on the choices you make.
   
   Multiple Endings: Different choices lead to different outcomes, providing replay value.
