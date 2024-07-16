@@ -29,9 +29,9 @@ GRAY = (200, 200, 200)
 # Image paths
 BACKGROUND_PLACEHOLDER_IMAGE_PATH = 'resources/background/placeholder.jpg'
 BACKGROUND_IMAGE_PATH = 'resources/background/'
-first_list = [BACKGROUND_IMAGE_PATH + str(img) + '.jpg' for img in range(1, 42)]
-second_list = [BACKGROUND_IMAGE_PATH + str(img) + '.jpg' for img in range(40, 1, -1)]
-BACKGROUND_IMAGE_PATH_LIST = first_list + second_list
+first_background_list = [BACKGROUND_IMAGE_PATH + str(img) + '.jpg' for img in range(1, 42)]
+second_background_list = [BACKGROUND_IMAGE_PATH + str(img) + '.jpg' for img in range(40, 1, -1)]
+BACKGROUND_IMAGE_PATH_LIST = first_background_list + second_background_list
 MAP_IMAGE_PATH = 'path/to/your/map_image.jpg'
 BUTTON_FILE_PATH = 'resources/button/'
 LOADING_IMAGE_PATH_LIST = ['resources/loading_screens/' + str(img) + '.png' for img in range(1, 3 + 1)]

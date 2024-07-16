@@ -5,14 +5,15 @@ This module contains class GameState, which handles the drawing and logic of gam
 """
 from database.save_states import savestate
 from ui.constants import GameStateName, LOADING_IMAGE_PATH_LIST, USER_NAME
-from ui.game_text import story_text
+from ui.game_text import story_text_english
+from ui.game_text import story_text_lietuviu
 
 
 class GameState:
     """Handles different game states."""
 
     def __init__(self, screen, settings, background_manager, background_manager_loading,
-                 text_btn, multi_text_btn, username_input_box, username_ask_btn,
+                 text_btn, username_input_box, username_ask_btn,
                  choice_btn_1, choice_btn_2, choice_btn_3, choice_btn_4, user_name):
         self.screen = screen
         self.settings = settings
@@ -20,15 +21,15 @@ class GameState:
         self.background_manager_loading = background_manager_loading
         self.user_name = user_name
         self.text_btn = text_btn
-        self.multi_text_btn = multi_text_btn
         self.username_input_box = username_input_box
         self.username_ask_btn = username_ask_btn
         self.choice_btn_1 = choice_btn_1
         self.choice_btn_2 = choice_btn_2
         self.choice_btn_3 = choice_btn_3
         self.choice_btn_4 = choice_btn_4
+        self.game_text = story_text_english if settings.language == 'English' else story_text_lietuviu
 
-    def handle_choice_button_game_states(self, game_state, event, choice_made, pigeon_money_taken, camel_blue_received,
+    def handle_choice_button_game_states(self, game_state, event, choice_made, items,
                                          character):
         """Handles game states with multiple choices"""
 
@@ -128,7 +129,7 @@ class GameState:
 
         if game_state == GameStateName.STORE_SCENE_6:
             if self.choice_btn_1.is_clicked(event):
-                if pigeon_money_taken:
+                if items[0]:
                     game_state = GameStateName.STORE_SCENE_26
                 else:
                     game_state = GameStateName.STORE_SCENE_7
@@ -157,7 +158,7 @@ class GameState:
                 self.text_btn.reset_animation()
                 choice_made = True
             elif self.choice_btn_2.is_clicked(event):
-                if camel_blue_received:
+                if items[2]:
                     game_state = GameStateName.BALCONY_SCENE_12
                     self.text_btn.reset_animation()
                     choice_made = True
@@ -170,7 +171,7 @@ class GameState:
                 self.text_btn.reset_animation()
                 choice_made = True
             elif self.choice_btn_4.is_clicked(event):
-                if pigeon_money_taken:
+                if items[1]:
                     self.text_btn.text_box_appear(self.screen)
                     self.text_btn.update_text('There is no more money in the pigeon nest')
                 else:
@@ -178,15 +179,16 @@ class GameState:
                     choice_made = True
 
             self.text_btn.reset_animation()
-        return choice_made, game_state, pigeon_money_taken, camel_blue_received
+
+        return choice_made, game_state, items
 
     def handle_game_state(self, game_state,
-                          random_number_generator, user_name, character, camel_blue_received, pigeon_money_taken):
+                          random_number_generator, user_name, character, items):
         """Handles linear game states"""
 
         original_state = game_state
         self.text_btn.reset_animation()
-        # game_state = game_state
+
         if game_state == GameStateName.LOADING_SCREEN:
             game_state = GameStateName.INTRO_INPUT
         elif game_state == GameStateName.INTRO_SCENE_1:
@@ -373,21 +375,22 @@ class GameState:
             game_state = GameStateName.BEDROOM_SCENE_11
         elif game_state == GameStateName.GAME_OVER:
             savestate.delete_user(user_name)
-            return None, None, None, None
+            return None, None, None
         elif game_state == GameStateName.STORE_SCENE_29:
-            camel_blue_received = True
+            items[2] = 1
             game_state = GameStateName.WORLD_MOVEMENT
         elif game_state == GameStateName.BALCONY_SCENE_11:
-            pigeon_money_taken = True
+            items[0] = 10
+            items[1] = 1
             game_state = GameStateName.BALCONY_SCENE_8
         elif game_state == GameStateName.GAME_COMPLETED:
-            return None, None, None, None
+            return None, None, None
 
         print(f"Linear transition: {original_state} -> {game_state}")
 
-        return game_state, user_name, camel_blue_received, pigeon_money_taken
+        return game_state, user_name, items
 
-    def handle_game_state_drawing(self, game_state):
+    def handle_game_state_drawing(self, game_state, items):
         """Draws all objects associated with a specific game_state"""
         if game_state == GameStateName.INTRO_INPUT:
             self.screen.fill((200, 200, 200))
@@ -415,8 +418,8 @@ class GameState:
         elif game_state == GameStateName.INTRO_SCENE_4:
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text('')
-            self.multi_text_btn.render_multiline_text('You can control your character with the arrow keys.\n'
-                                                      'Hold "L_Shift" to sprint!', self.screen, color=(255, 40, 40))
+            self.text_btn.render_multiline_text('You can control your character with the arrow keys.\n'
+                                                'Hold "L_Shift" to sprint!', self.screen, color=(255, 40, 40))
         elif game_state == GameStateName.INTRO_SCENE_5:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/main_map/day.jpg')
@@ -428,18 +431,18 @@ class GameState:
             self.background_manager.update_image_path('resources/scene_backgrounds/bedroom.jpg')
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
-            self.text_btn.update_text(story_text.get('HomeRoom').get('story')[0])
+            self.text_btn.update_text(self.game_text.get('HomeRoom').get('story')[0])
         elif game_state == GameStateName.BEDROOM_SCENE_2:
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text('')
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeRoom').get('story')[1], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeRoom').get('story')[1], self.screen)
         elif game_state == GameStateName.BEDROOM_SCENE_3:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/bedroom.jpg')
             self.background_manager.draw_background(self.screen)
-            self.choice_btn_1.update_text(story_text.get('HomeRoom').get('selection')[0])
-            self.choice_btn_2.update_text(story_text.get('HomeRoom').get('selection')[1])
-            self.choice_btn_3.update_text(story_text.get('HomeRoom').get('selection')[2])
+            self.choice_btn_1.update_text(self.game_text.get('HomeRoom').get('selection')[0])
+            self.choice_btn_2.update_text(self.game_text.get('HomeRoom').get('selection')[1])
+            self.choice_btn_3.update_text(self.game_text.get('HomeRoom').get('selection')[2])
             self.choice_btn_1.draw(self.screen)
             self.choice_btn_1.check_hover(self.screen)
             self.choice_btn_2.draw(self.screen)
@@ -451,13 +454,13 @@ class GameState:
             self.background_manager.update_image_path('resources/scene_backgrounds/bedroom.jpg')
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
-            self.text_btn.update_text(story_text.get('HomeRoom').get('story')[2])
+            self.text_btn.update_text(self.game_text.get('HomeRoom').get('story')[2])
         elif game_state == GameStateName.BEDROOM_SCENE_5:
             self.screen.fill((0, 0, 0))
             self.background_manager.draw_background(self.screen)
-            self.choice_btn_1.update_text(story_text.get('HomeRoom').get('selection')[0])
-            self.choice_btn_2.update_text(story_text.get('HomeRoom').get('selection')[1])
-            self.choice_btn_3.update_text(story_text.get('HomeRoom').get('selection')[2])
+            self.choice_btn_1.update_text(self.game_text.get('HomeRoom').get('selection')[0])
+            self.choice_btn_2.update_text(self.game_text.get('HomeRoom').get('selection')[1])
+            self.choice_btn_3.update_text(self.game_text.get('HomeRoom').get('selection')[2])
             self.choice_btn_1.draw(self.screen)
             self.choice_btn_1.check_hover(self.screen)
             self.choice_btn_2.draw(self.screen)
@@ -469,17 +472,17 @@ class GameState:
             self.background_manager.update_image_path('resources/scene_backgrounds/balcony.jpg')
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
-            self.text_btn.update_text(story_text.get('HomeBalcony').get('story')[0])
+            self.text_btn.update_text(self.game_text.get('HomeBalcony').get('story')[0])
         elif game_state == GameStateName.BALCONY_SCENE_2:
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text('')
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeBalcony').get('story')[1], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeBalcony').get('story')[1], self.screen)
         elif game_state == GameStateName.BALCONY_SCENE_3:
             self.screen.fill((0, 0, 0))
             self.background_manager.draw_background(self.screen)
-            self.choice_btn_1.update_text(story_text.get('HomeBalcony').get('selection')[0])
-            self.choice_btn_2.update_text(story_text.get('HomeBalcony').get('selection')[1])
-            self.choice_btn_3.update_text(story_text.get('HomeBalcony').get('selection')[2])
+            self.choice_btn_1.update_text(self.game_text.get('HomeBalcony').get('selection')[0])
+            self.choice_btn_2.update_text(self.game_text.get('HomeBalcony').get('selection')[1])
+            self.choice_btn_3.update_text(self.game_text.get('HomeBalcony').get('selection')[2])
             self.choice_btn_1.draw(self.screen)
             self.choice_btn_1.check_hover(self.screen)
             self.choice_btn_2.draw(self.screen)
@@ -491,12 +494,12 @@ class GameState:
             self.background_manager.update_image_path('resources/scene_backgrounds/balcony.jpg')
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
-            self.text_btn.update_text(story_text.get('HomeBalcony').get('story')[2])
+            self.text_btn.update_text(self.game_text.get('HomeBalcony').get('story')[2])
         elif game_state == GameStateName.BALCONY_SCENE_5:
             self.screen.fill((0, 0, 0))
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text('')
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeBalcony').get('story')[3], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeBalcony').get('story')[3], self.screen)
         elif game_state == GameStateName.GAME_OVER:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/game_over.jpg')
@@ -510,21 +513,21 @@ class GameState:
         elif game_state == GameStateName.KITCHEN_SCENE_2:
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text('')
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeKitchen').get('story')[0], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeKitchen').get('story')[0], self.screen)
         elif game_state == GameStateName.KITCHEN_SCENE_3:
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text('')
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeKitchen').get('story')[1], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeKitchen').get('story')[1], self.screen)
         elif game_state == GameStateName.KITCHEN_SCENE_4:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/kitchen.jpg')
             self.background_manager.draw_background(self.screen)
             self.background_manager.update_image_path('resources/scene_backgrounds/mom2.png')
             self.background_manager.draw_background(self.screen)
-            self.choice_btn_1.update_text(story_text.get('HomeKitchen').get('selection')[0])
-            self.choice_btn_2.update_text(story_text.get('HomeKitchen').get('selection')[1])
-            self.choice_btn_3.update_text(story_text.get('HomeKitchen').get('selection')[2])
-            self.choice_btn_4.update_text(story_text.get('HomeKitchen').get('selection')[3])
+            self.choice_btn_1.update_text(self.game_text.get('HomeKitchen').get('selection')[0])
+            self.choice_btn_2.update_text(self.game_text.get('HomeKitchen').get('selection')[1])
+            self.choice_btn_3.update_text(self.game_text.get('HomeKitchen').get('selection')[2])
+            self.choice_btn_4.update_text(self.game_text.get('HomeKitchen').get('selection')[3])
             self.choice_btn_1.draw(self.screen)
             self.choice_btn_1.check_hover(self.screen)
             self.choice_btn_2.draw(self.screen)
@@ -540,10 +543,10 @@ class GameState:
             self.background_manager.update_image_path('resources/scene_backgrounds/mom3.png')
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
-            self.text_btn.update_text(f"{self.user_name}: " + story_text.get('HomeKitchen').get('player')[0])
+            self.text_btn.update_text(f"{self.user_name}: " + self.game_text.get('HomeKitchen').get('player')[0])
         elif game_state == GameStateName.KITCHEN_SCENE_6:
             self.text_btn.text_box_appear(self.screen)
-            self.text_btn.update_text("Mom: " + story_text.get('HomeKitchen').get('mom')[0])
+            self.text_btn.update_text("Mom: " + self.game_text.get('HomeKitchen').get('mom')[0])
         elif game_state == GameStateName.KITCHEN_SCENE_7:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/fridge.jpg')
@@ -554,63 +557,57 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeKitchen').get('story')[2], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeKitchen').get('story')[2], self.screen)
         elif game_state == GameStateName.LAIPTINE_SCENE_1:
             self.screen.fill((0, 0, 0))
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeLaiptine').get('story')[0], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeLaiptine').get('story')[0], self.screen)
         elif game_state == GameStateName.LAIPTINE_SCENE_2:
-            self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/stairwell.jpg')
             self.background_manager.draw_background(self.screen)
             self.background_manager.update_image_path('resources/scene_backgrounds/kaimynas.png')
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeLaiptine').get('story')[1], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeLaiptine').get('story')[1], self.screen)
         elif game_state == GameStateName.LAIPTINE_SCENE_3:
-            self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/stairwell.jpg')
             self.background_manager.draw_background(self.screen)
             self.background_manager.update_image_path('resources/scene_backgrounds/kaimynas2.png')
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeLaiptine').get('story')[2], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeLaiptine').get('story')[2], self.screen)
         elif game_state == GameStateName.LAIPTINE_SCENE_4:
-            self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/stairwell.jpg')
             self.background_manager.draw_background(self.screen)
             self.background_manager.update_image_path('resources/scene_backgrounds/kaimynas2.png')
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeLaiptine').get('story')[3], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeLaiptine').get('story')[3], self.screen)
         elif game_state == GameStateName.LAIPTINE_SCENE_5:
-            self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/stairwell.jpg')
             self.background_manager.draw_background(self.screen)
             self.background_manager.update_image_path('resources/scene_backgrounds/kaimynas2.png')
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
-            self.text_btn.update_text(f"{self.user_name}: " + story_text.get('HomeLaiptine').get('player')[0])
+            self.text_btn.update_text(f"{self.user_name}: " + self.game_text.get('HomeLaiptine').get('player')[0])
         elif game_state == GameStateName.LAIPTINE_SCENE_6:
-            self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/stairwell.jpg')
             self.background_manager.draw_background(self.screen)
             self.background_manager.update_image_path('resources/scene_backgrounds/kaimynas.png')
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
-            self.text_btn.update_text(f"Kaimynas: " + story_text.get('HomeLaiptine').get('kaimynas')[0])
+            self.text_btn.update_text(f"Kaimynas: " + self.game_text.get('HomeLaiptine').get('kaimynas')[0])
         elif game_state == GameStateName.NARVELIS_SCENE_1:
-            self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
             self.background_manager.draw_background(self.screen)
             self.background_manager.update_image_path('resources/scene_backgrounds/tupikas.png')
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
-            self.text_btn.update_text(story_text.get('HomeNarvelis').get('story')[0])
+            self.text_btn.update_text(self.game_text.get('HomeNarvelis').get('story')[0])
         elif game_state == GameStateName.NARVELIS_SCENE_2:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
@@ -618,7 +615,7 @@ class GameState:
             self.background_manager.update_image_path('resources/scene_backgrounds/tupikas.png')
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
-            self.text_btn.update_text(story_text.get('HomeNarvelis').get('story')[1])
+            self.text_btn.update_text(self.game_text.get('HomeNarvelis').get('story')[1])
         elif game_state == GameStateName.NARVELIS_SCENE_3:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
@@ -627,7 +624,7 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text(" ")
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[2], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeNarvelis').get('story')[2], self.screen)
         elif game_state == GameStateName.NARVELIS_SCENE_4:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
@@ -636,7 +633,7 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text(" ")
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[3], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeNarvelis').get('story')[3], self.screen)
         elif game_state == GameStateName.NARVELIS_SCENE_5:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
@@ -644,7 +641,7 @@ class GameState:
             self.background_manager.update_image_path('resources/scene_backgrounds/tupikas.png')
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
-            self.text_btn.update_text(story_text.get('HomeNarvelis').get('story')[4])
+            self.text_btn.update_text(self.game_text.get('HomeNarvelis').get('story')[4])
         elif game_state == GameStateName.NARVELIS_SCENE_6:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
@@ -652,16 +649,16 @@ class GameState:
             self.background_manager.update_image_path('resources/scene_backgrounds/tupikas2.png')
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
-            self.text_btn.update_text(story_text.get('HomeNarvelis').get('story')[5])
+            self.text_btn.update_text(self.game_text.get('HomeNarvelis').get('story')[5])
         elif game_state == GameStateName.NARVELIS_SCENE_7:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
             self.background_manager.draw_background(self.screen)
             self.background_manager.update_image_path('resources/scene_backgrounds/tupikas.png')
             self.background_manager.draw_background(self.screen)
-            self.choice_btn_1.update_text(story_text.get('HomeNarvelis').get('selection')[0])
-            self.choice_btn_2.update_text(story_text.get('HomeNarvelis').get('selection')[1])
-            self.choice_btn_3.update_text(story_text.get('HomeNarvelis').get('selection')[2])
+            self.choice_btn_1.update_text(self.game_text.get('HomeNarvelis').get('selection')[0])
+            self.choice_btn_2.update_text(self.game_text.get('HomeNarvelis').get('selection')[1])
+            self.choice_btn_3.update_text(self.game_text.get('HomeNarvelis').get('selection')[2])
             self.choice_btn_1.draw(self.screen)
             self.choice_btn_1.check_hover(self.screen)
             self.choice_btn_2.draw(self.screen)
@@ -676,7 +673,7 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[6], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeNarvelis').get('story')[6], self.screen)
         elif game_state == GameStateName.NARVELIS_SCENE_9:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
@@ -685,7 +682,7 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[7], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeNarvelis').get('story')[7], self.screen)
         elif game_state == GameStateName.NARVELIS_SCENE_10:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
@@ -694,7 +691,7 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[8], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeNarvelis').get('story')[8], self.screen)
         elif game_state == GameStateName.NARVELIS_SCENE_11:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
@@ -703,7 +700,7 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[9], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeNarvelis').get('story')[9], self.screen)
         elif game_state == GameStateName.NARVELIS_SCENE_12:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
@@ -712,7 +709,7 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[10], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeNarvelis').get('story')[10], self.screen)
         elif game_state == GameStateName.NARVELIS_SCENE_13:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
@@ -721,7 +718,7 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[11], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeNarvelis').get('story')[11], self.screen)
         elif game_state == GameStateName.NARVELIS_SCENE_14:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
@@ -730,7 +727,7 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[12], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeNarvelis').get('story')[12], self.screen)
         elif game_state == GameStateName.NARVELIS_SCENE_15:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
@@ -739,7 +736,7 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[13], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeNarvelis').get('story')[13], self.screen)
         elif game_state == GameStateName.NARVELIS_SCENE_16:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
@@ -748,7 +745,7 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[14], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeNarvelis').get('story')[14], self.screen)
         elif game_state == GameStateName.NARVELIS_SCENE_17:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/playground.jpg')
@@ -759,21 +756,21 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[15], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeNarvelis').get('story')[15], self.screen)
         elif game_state == GameStateName.NARVELIS_SCENE_19:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/playground.jpg')
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[16], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeNarvelis').get('story')[16], self.screen)
         elif game_state == GameStateName.NARVELIS_SCENE_20:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/playground.jpg')
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[17], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeNarvelis').get('story')[17], self.screen)
         elif game_state == GameStateName.NARVELIS_SCENE_21:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
@@ -782,7 +779,7 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[18], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeNarvelis').get('story')[18], self.screen)
         elif game_state == GameStateName.NARVELIS_SCENE_22:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
@@ -791,50 +788,50 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeNarvelis').get('story')[19], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeNarvelis').get('story')[19], self.screen)
         elif game_state == GameStateName.STORE_SCENE_1:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/store.jpg')
             self.background_manager.draw_background(self.screen)
             self.text_btn.update_text("")
             self.text_btn.text_box_appear(self.screen)
-            self.multi_text_btn.render_multiline_text(story_text.get('Store').get('story')[0], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('Store').get('story')[0], self.screen)
         elif game_state == GameStateName.STORE_SCENE_2:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/store.jpg')
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('Store').get('story')[1], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('Store').get('story')[1], self.screen)
         elif game_state == GameStateName.STORE_SCENE_3:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/store.jpg')
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('Store').get('story')[2], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('Store').get('story')[2], self.screen)
         elif game_state == GameStateName.STORE_SCENE_4:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/store.jpg')
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('Store').get('story')[3], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('Store').get('story')[3], self.screen)
         elif game_state == GameStateName.STORE_SCENE_5:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/store_kasa.jpg')
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('Store').get('story')[4], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('Store').get('story')[4], self.screen)
         elif game_state == GameStateName.STORE_SCENE_6:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/store_kasa.jpg')
             self.background_manager.draw_background(self.screen)
             self.background_manager.update_image_path('resources/scene_backgrounds/kasininke.png')
             self.background_manager.draw_background(self.screen)
-            self.choice_btn_1.update_text(story_text.get('Store').get('selection')[0])
-            self.choice_btn_2.update_text(story_text.get('Store').get('selection')[1])
+            self.choice_btn_1.update_text(self.game_text.get('Store').get('selection')[0])
+            self.choice_btn_2.update_text(self.game_text.get('Store').get('selection')[1])
             self.choice_btn_1.draw(self.screen)
             self.choice_btn_1.check_hover(self.screen)
             self.choice_btn_2.draw(self.screen)
@@ -847,8 +844,8 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(f"{self.user_name}: " + story_text.get('Store').get('player')[0],
-                                                      self.screen)
+            self.text_btn.render_multiline_text(f"{self.user_name}: " + self.game_text.get('Store').get('player')[0],
+                                                self.screen)
         elif game_state == GameStateName.STORE_SCENE_8:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/store_kasa.jpg')
@@ -857,7 +854,7 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('Store').get('story')[5], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('Store').get('story')[5], self.screen)
         elif game_state == GameStateName.STORE_SCENE_9:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/store_kasa.jpg')
@@ -866,8 +863,8 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text("Cashier: " + story_text.get('Store').get('kasininke')[0],
-                                                      self.screen)
+            self.text_btn.render_multiline_text("Cashier: " + self.game_text.get('Store').get('kasininke')[0],
+                                                self.screen)
         elif game_state == GameStateName.STORE_SCENE_10:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/store_kasa.jpg')
@@ -876,7 +873,7 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('Store').get('story')[6], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('Store').get('story')[6], self.screen)
         elif game_state == GameStateName.STORE_SCENE_11:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/store_kasa.jpg')
@@ -885,15 +882,15 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('Store').get('story')[7], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('Store').get('story')[7], self.screen)
         elif game_state == GameStateName.STORE_SCENE_12:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/store_kasa.jpg')
             self.background_manager.draw_background(self.screen)
             self.background_manager.update_image_path('resources/scene_backgrounds/kasininke2.png')
             self.background_manager.draw_background(self.screen)
-            self.choice_btn_1.update_text(story_text.get('Store').get('selection')[1])
-            self.choice_btn_2.update_text(story_text.get('Store').get('selection')[2])
+            self.choice_btn_1.update_text(self.game_text.get('Store').get('selection')[1])
+            self.choice_btn_2.update_text(self.game_text.get('Store').get('selection')[2])
             self.choice_btn_1.draw(self.screen)
             self.choice_btn_1.check_hover(self.screen)
             self.choice_btn_2.draw(self.screen)
@@ -906,8 +903,8 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(f"{self.user_name}: " + story_text.get('Store').get('player')[1],
-                                                      self.screen)
+            self.text_btn.render_multiline_text(f"{self.user_name}: " + self.game_text.get('Store').get('player')[1],
+                                                self.screen)
         elif game_state == GameStateName.STORE_SCENE_14:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/store_kasa.jpg')
@@ -916,7 +913,7 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('Store').get('story')[8], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('Store').get('story')[8], self.screen)
         elif game_state == GameStateName.STORE_SCENE_15:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/store_kasa.jpg')
@@ -925,8 +922,8 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text("Cashier: " + story_text.get('Store').get('kasininke')[1],
-                                                      self.screen)
+            self.text_btn.render_multiline_text("Cashier: " + self.game_text.get('Store').get('kasininke')[1],
+                                                self.screen)
         elif game_state == GameStateName.STORE_SCENE_16:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/store_kasa.jpg')
@@ -935,7 +932,7 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('Store').get('story')[9], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('Store').get('story')[9], self.screen)
         elif game_state == GameStateName.STORE_SCENE_17:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/store_kasa.jpg')
@@ -944,8 +941,8 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(f"{self.user_name}: " + story_text.get('Store').get('player')[2],
-                                                      self.screen)
+            self.text_btn.render_multiline_text(f"{self.user_name}: " + self.game_text.get('Store').get('player')[2],
+                                                self.screen)
         elif game_state == GameStateName.STORE_SCENE_18:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/store_kasa.jpg')
@@ -954,7 +951,7 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('Store').get('story')[10], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('Store').get('story')[10], self.screen)
         elif game_state == GameStateName.STORE_SCENE_19:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/store_kasa.jpg')
@@ -963,16 +960,16 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text("Cashier: " + story_text.get('Store').get('kasininke')[2],
-                                                      self.screen)
+            self.text_btn.render_multiline_text("Cashier: " + self.game_text.get('Store').get('kasininke')[2],
+                                                self.screen)
         elif game_state == GameStateName.STORE_SCENE_20:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/store_kasa.jpg')
             self.background_manager.draw_background(self.screen)
             self.background_manager.update_image_path('resources/scene_backgrounds/kasininke2.png')
             self.background_manager.draw_background(self.screen)
-            self.choice_btn_1.update_text(story_text.get('Store').get('selection')[1])
-            self.choice_btn_2.update_text(story_text.get('Store').get('selection')[3])
+            self.choice_btn_1.update_text(self.game_text.get('Store').get('selection')[1])
+            self.choice_btn_2.update_text(self.game_text.get('Store').get('selection')[3])
             self.choice_btn_1.draw(self.screen)
             self.choice_btn_1.check_hover(self.screen)
             self.choice_btn_2.draw(self.screen)
@@ -985,7 +982,7 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('Store').get('story')[11], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('Store').get('story')[11], self.screen)
         elif game_state == GameStateName.STORE_SCENE_22:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/store_kasa.jpg')
@@ -994,7 +991,7 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('Store').get('story')[12], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('Store').get('story')[12], self.screen)
         elif game_state == GameStateName.STORE_SCENE_23:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/store_kasa.jpg')
@@ -1003,17 +1000,17 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('Store').get('story')[13], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('Store').get('story')[13], self.screen)
         elif game_state == GameStateName.STORE_SCENE_24:
             self.screen.fill((0, 0, 0))
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('Store').get('story')[14], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('Store').get('story')[14], self.screen)
         elif game_state == GameStateName.STORE_SCENE_25:
             self.screen.fill((0, 0, 0))
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('Store').get('story')[15], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('Store').get('story')[15], self.screen)
         elif game_state == GameStateName.NARVELIS_SCENE_23:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/stairwell_entrance.jpg')
@@ -1030,10 +1027,10 @@ class GameState:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/bedroom.jpg')
             self.background_manager.draw_background(self.screen)
-            self.choice_btn_1.update_text(story_text.get('HomeRoom').get('selection')[0])
-            self.choice_btn_2.update_text(story_text.get('HomeRoom').get('selection')[1])
-            self.choice_btn_3.update_text(story_text.get('HomeRoom').get('selection')[2])
-            self.choice_btn_4.update_text(story_text.get('HomeRoom').get('selection')[3])
+            self.choice_btn_1.update_text(self.game_text.get('HomeRoom').get('selection')[0])
+            self.choice_btn_2.update_text(self.game_text.get('HomeRoom').get('selection')[1])
+            self.choice_btn_3.update_text(self.game_text.get('HomeRoom').get('selection')[2])
+            self.choice_btn_4.update_text(self.game_text.get('HomeRoom').get('selection')[3])
             self.choice_btn_1.draw(self.screen)
             self.choice_btn_1.check_hover(self.screen)
             self.choice_btn_2.draw(self.screen)
@@ -1056,10 +1053,10 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.background_manager.update_image_path('resources/scene_backgrounds/mom.png')
             self.background_manager.draw_background(self.screen)
-            self.choice_btn_1.update_text(story_text.get('HomeKitchen').get('selection')[1])
-            self.choice_btn_2.update_text(story_text.get('HomeKitchen').get('selection')[2])
-            self.choice_btn_3.update_text(story_text.get('HomeKitchen').get('selection')[3])
-            self.choice_btn_4.update_text(story_text.get('HomeKitchen').get('selection')[4])
+            self.choice_btn_1.update_text(self.game_text.get('HomeKitchen').get('selection')[1])
+            self.choice_btn_2.update_text(self.game_text.get('HomeKitchen').get('selection')[2])
+            self.choice_btn_3.update_text(self.game_text.get('HomeKitchen').get('selection')[3])
+            self.choice_btn_4.update_text(self.game_text.get('HomeKitchen').get('selection')[4])
             self.choice_btn_1.draw(self.screen)
             self.choice_btn_1.check_hover(self.screen)
             self.choice_btn_2.draw(self.screen)
@@ -1074,7 +1071,7 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(
+            self.text_btn.render_multiline_text(
                 'Despite how many times you look at it,\nthere\'s still nothing edible inside..', self.screen)
         elif game_state == GameStateName.KITCHEN_SCENE_12:
             self.screen.fill((0, 0, 0))
@@ -1084,7 +1081,7 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(
+            self.text_btn.render_multiline_text(
                 'You\'re not desperate enough.', self.screen)
         elif game_state == GameStateName.BALCONY_SCENE_7:
             self.screen.fill((0, 0, 0))
@@ -1092,29 +1089,32 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(
+            self.text_btn.render_multiline_text(
                 'You\'re here again..', self.screen)
         elif game_state == GameStateName.BALCONY_SCENE_8:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/balcony.jpg')
             self.background_manager.draw_background(self.screen)
-            self.choice_btn_1.update_text(story_text.get('HomeBalcony').get('selection')[0])
-            self.choice_btn_2.update_text(story_text.get('HomeBalcony').get('selection')[1])
-            self.choice_btn_3.update_text(story_text.get('HomeBalcony').get('selection')[2])
-            self.choice_btn_4.update_text(story_text.get('HomeBalcony').get('selection')[3])
+            self.choice_btn_1.update_text(self.game_text.get('HomeBalcony').get('selection')[0])
+            self.choice_btn_2.update_text(self.game_text.get('HomeBalcony').get('selection')[1])
+            self.choice_btn_3.update_text(self.game_text.get('HomeBalcony').get('selection')[2])
+            self.choice_btn_4.update_text(self.game_text.get('HomeBalcony').get('selection')[3])
             self.choice_btn_1.draw(self.screen)
             self.choice_btn_1.check_hover(self.screen)
             self.choice_btn_2.draw(self.screen)
             self.choice_btn_2.check_hover(self.screen)
             self.choice_btn_3.draw(self.screen)
             self.choice_btn_3.check_hover(self.screen)
+            if not items[1]:
+                self.choice_btn_4.draw(self.screen)
+                self.choice_btn_4.check_hover(self.screen)
         elif game_state == GameStateName.BALCONY_SCENE_9:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/balcony.jpg')
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(
+            self.text_btn.render_multiline_text(
                 'You have no smokes!', self.screen)
         elif game_state == GameStateName.BALCONY_SCENE_10:
             self.screen.fill((0, 0, 0))
@@ -1126,15 +1126,15 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text('You have found some currency! You take it from the nest.',
-                                                      self.screen)
+            self.text_btn.render_multiline_text('You have found some currency! You take it from the nest.',
+                                                self.screen)
         elif game_state == GameStateName.BALCONY_SCENE_12:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/balcony.jpg')
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(
+            self.text_btn.render_multiline_text(
                 'Ahh. Finally, your first smoke of the day.', self.screen)
         elif game_state == GameStateName.BALCONY_SCENE_13:
             self.screen.fill((0, 0, 0))
@@ -1142,7 +1142,7 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(
+            self.text_btn.render_multiline_text(
                 'And it\'s yours to enjoy.', self.screen)
         elif game_state == GameStateName.BALCONY_SCENE_14:
             self.screen.fill((0, 0, 0))
@@ -1160,8 +1160,8 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(f"{self.user_name}: " + story_text.get('Store').get('player')[0],
-                                                      self.screen)
+            self.text_btn.render_multiline_text(f"{self.user_name}: " + self.game_text.get('Store').get('player')[0],
+                                                self.screen)
         elif game_state == GameStateName.STORE_SCENE_27:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/store_kasa.jpg')
@@ -1170,8 +1170,8 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text("Cashier: " + story_text.get('Store').get('kasininke')[0],
-                                                      self.screen)
+            self.text_btn.render_multiline_text("Cashier: " + self.game_text.get('Store').get('kasininke')[0],
+                                                self.screen)
         elif game_state == GameStateName.STORE_SCENE_28:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/store_kasa.jpg')
@@ -1180,7 +1180,7 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text(story_text.get('Store').get('story')[16], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('Store').get('story')[16], self.screen)
         elif game_state == GameStateName.STORE_SCENE_29:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/store_kasa.jpg')
@@ -1189,7 +1189,7 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text("")
-            self.multi_text_btn.render_multiline_text('You have received a pack of cigarettes!', self.screen)
+            self.text_btn.render_multiline_text('You have received a pack of cigarettes!', self.screen)
         elif game_state == GameStateName.GAME_COMPLETED:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/thanks_for_playing.jpg')
@@ -1200,12 +1200,12 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text('')
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeBathroom').get('story')[0], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeBathroom').get('story')[0], self.screen)
         elif game_state == GameStateName.BATHROOM_SCENE_2:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/bathroom.jpg')
             self.background_manager.draw_background(self.screen)
-            self.choice_btn_1.update_text(story_text.get('HomeBathroom').get('selection')[0])
+            self.choice_btn_1.update_text(self.game_text.get('HomeBathroom').get('selection')[0])
             self.choice_btn_1.draw(self.screen)
             self.choice_btn_1.check_hover(self.screen)
         elif game_state == GameStateName.BATHROOM_SCENE_3:
@@ -1214,12 +1214,12 @@ class GameState:
             self.background_manager.draw_background(self.screen)
             self.text_btn.text_box_appear(self.screen)
             self.text_btn.update_text('')
-            self.multi_text_btn.render_multiline_text(story_text.get('HomeBathroom').get('story')[2], self.screen)
+            self.text_btn.render_multiline_text(self.game_text.get('HomeBathroom').get('story')[2], self.screen)
         elif game_state == GameStateName.BATHROOM_SCENE_4:
             self.screen.fill((0, 0, 0))
             self.background_manager.update_image_path('resources/scene_backgrounds/bathroom.jpg')
             self.background_manager.draw_background(self.screen)
-            self.choice_btn_1.update_text(story_text.get('HomeBathroom').get('selection')[0])
+            self.choice_btn_1.update_text(self.game_text.get('HomeBathroom').get('selection')[0])
             self.choice_btn_1.draw(self.screen)
             self.choice_btn_1.check_hover(self.screen)
         elif game_state == GameStateName.SLEEP_SCENE_1:

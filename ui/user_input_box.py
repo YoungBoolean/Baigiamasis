@@ -11,19 +11,19 @@ from ui.constants import TEXT_FONT_PATH, WHITE, BLACK
 class InputBox:
     """InputBox class, responsible for drawing the user entered characters, i.e. Username, on screen."""
 
-    def __init__(self, x, y, w, h, text='', max_font_size=24,
+    def __init__(self, x, y, w, h, screen_scale, text='', max_font_size=30,
                  font_path=TEXT_FONT_PATH):
         self.rect = pygame.Rect(x, y, w, h)
         self.color = WHITE
         self.text = text
-        self.font = pygame.font.Font(font_path, max_font_size)
+        self.font = pygame.font.Font(font_path, int(max_font_size * screen_scale))
         self.text_surf = self.font.render(text, True, BLACK)
         self.username = None
 
     def handle_event(self, event):
         """Takes an event, checks if it's valid and saves the characters entered."""
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETURN:
+            if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                 self.username = self.text  # Save the entered username
                 print(self.username)  # Print the username for debugging
                 self.text = ''

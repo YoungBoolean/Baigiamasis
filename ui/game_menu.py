@@ -22,13 +22,17 @@ class GameMenu:
     button object creation, entries to other menus
     """
 
-    def __init__(self, screen, clock, settings, background_manager, background_manager_loading):
+    def __init__(self, screen, clock, settings, background_manager,
+                 background_manager_loading, button_image, button_image_solid, loaded_hover_image_list):
         self.screen = screen
         self.clock = clock
         self.settings = settings
         self.background_manager = background_manager
         self.background_manager_loading = background_manager_loading
         self.screen_width, self.screen_height = settings.current_resolution
+        self.button_image = button_image
+        self.button_image_solid = button_image_solid
+        self.loaded_hover_image_list = loaded_hover_image_list
         self.start()
 
     def create_buttons(self):
@@ -37,13 +41,14 @@ class GameMenu:
         width_scale = self.screen_width / original_width
         height_scale = self.screen_height / original_height
 
-        start_btn = Button(250 * width_scale, 180 * height_scale,
+        start_btn = Button(250 * width_scale, 180 * height_scale, self.button_image, self.loaded_hover_image_list,
+                           width_scale,
                            'New game', button_size=(300 * width_scale, 50 * height_scale))
 
-        load_btn = Button(250 * width_scale, 240 * height_scale,
+        load_btn = Button(250 * width_scale, 240 * height_scale, self.button_image, self.loaded_hover_image_list, width_scale,
                           'Load game', button_size=(300 * width_scale, 50 * height_scale))
 
-        settings_btn = Button(250 * width_scale, 300 * height_scale,
+        settings_btn = Button(250 * width_scale, 300 * height_scale, self.button_image, self.loaded_hover_image_list, width_scale,
                               'Settings', button_size=(300 * width_scale, 50 * height_scale))
 
         return start_btn, load_btn, settings_btn
@@ -66,19 +71,22 @@ class GameMenu:
                 if start_btn.is_clicked(event):
                     self.screen.fill((0, 0, 0))
                     start(self.screen, self.clock, self.settings, self.background_manager_loading,
-                          self.background_manager)
+                          self.background_manager, self.button_image,
+                          self.button_image_solid, self.loaded_hover_image_list)
                     self.background_manager_loading.update_screen_size(self.settings.current_resolution)
                     self.background_manager_loading.update_background_slideshow()
 
                 # Starts the load menu if load_btn is clicked
                 if load_btn.is_clicked(event):
                     LoadMenu(self.screen, self.clock, self.settings,
-                             self.background_manager, self.background_manager_loading)
+                             self.background_manager, self.background_manager_loading,
+                             self.button_image, self.button_image_solid, self.loaded_hover_image_list)
 
                 # Starts the settings menu if settings_btn is clicked
                 if settings_btn.is_clicked(event):
                     SettingsMenu(self.screen, self.clock, self.settings,
-                                 self.background_manager, self.background_manager_loading)
+                                 self.background_manager, self.background_manager_loading,
+                                 self.button_image, self.loaded_hover_image_list)
 
             # Drawing of backgrounds
             self.background_manager_loading.update_background_slideshow()

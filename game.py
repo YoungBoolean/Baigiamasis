@@ -19,9 +19,11 @@ from database.save_states import savestate
 from game_states import GameState
 
 
-def start(screen, clock, settings, background_manager_loading, background_manager,
-          save_state=GameStateName.LOADING_SCREEN, player_name=USER_NAME):
+def start(screen, clock, settings, background_manager_loading, background_manager, button_image, button_image_solid,
+          loaded_hover_image_list, save_state=GameStateName.LOADING_SCREEN, player_name=USER_NAME, items=None):
     """Starts the main game loop and sets up screen resolution and scaling"""
+    if items is None:
+        items = [0, 0, 0]
     screen_width, screen_height = settings.current_resolution
     original_width, original_height = RESOLUTIONS[0]
     width_scale = screen_width / original_width
@@ -33,94 +35,81 @@ def start(screen, clock, settings, background_manager_loading, background_manage
 
     # Create button objects
     text_btn = Button(80 * width_scale,
-                      350 * height_scale,
+                      350 * height_scale, button_image, loaded_hover_image_list, width_scale,
                       '', button_size=(652 * width_scale, 252 * height_scale),
                       font_path=TEXT_FONT_PATH,
                       text_color=(20, 20, 20),
-                      button_text_padding=20)
-
-    multi_text_btn = Button(130 * width_scale,
-                            400 * height_scale,
-                            '', button_size=(652 * width_scale, 252 * height_scale),
-                            font_path=TEXT_FONT_PATH,
-                            text_color=(20, 20, 20),
-                            button_text_padding=20)
+                      button_text_padding=40, max_font_size=24)
 
     username_input_box = InputBox(240 * width_scale,
-                                  515 * height_scale, 300, 200)
+                                  515 * height_scale, 300, 200, width_scale)
 
     username_ask_btn = Button(80 * width_scale,
-                              350 * height_scale,
+                              350 * height_scale, button_image, loaded_hover_image_list, width_scale,
                               'Please enter your name:',
                               button_size=(652 * width_scale, 252 * height_scale),
                               font_path=TEXT_FONT_PATH,
                               text_color=(20, 20, 20),
-                              button_text_padding=20)
+                              button_text_padding=20, max_font_size=24)
 
     save_btn = Button(650 * width_scale,
-                      1 * height_scale,
+                      1 * height_scale, button_image_solid, loaded_hover_image_list, width_scale,
                       'Save game',
                       button_size=(150 * width_scale, 25 * height_scale),
                       text_color=(20, 20, 20),
-                      button_text_padding=20,
-                      button_file_path='resources/button/button_hover_animation/14.png')
+                      button_text_padding=20)
 
     load_btn = Button(500 * width_scale,
-                      1 * height_scale,
+                      1 * height_scale, button_image_solid, loaded_hover_image_list, width_scale,
                       'Load game',
                       button_size=(150 * width_scale, 25 * height_scale),
                       text_color=(20, 20, 20),
-                      button_text_padding=20,
-                      button_file_path='resources/button/button_hover_animation/14.png')
+                      button_text_padding=20)
 
     menu_btn = Button(350 * width_scale,
-                      1 * height_scale,
+                      1 * height_scale, button_image_solid, loaded_hover_image_list, width_scale,
                       'Menu',
                       button_size=(150 * width_scale, 25 * height_scale),
-                      text_color=(20, 20, 20), button_text_padding=90,
-                      button_file_path='resources/button/button_hover_animation/14.png')
+                      text_color=(20, 20, 20), button_text_padding=90)
 
     choice_btn_1 = Button((260 * width_scale),
-                          (180 * height_scale),
-                          'Choice 1', text_color=(20, 20, 20), button_text_padding=10,
-                          button_file_path='resources/button/button_hover_animation/14.png')
+                          (180 * height_scale), button_image_solid, loaded_hover_image_list, width_scale,
+                          'Choice 1', text_color=(20, 20, 20), button_text_padding=10)
 
     choice_btn_2 = Button((260 * width_scale),
-                          (250 * height_scale),
-                          'Choice 2', text_color=(20, 20, 20), button_text_padding=10,
-                          button_file_path='resources/button/button_hover_animation/14.png')
+                          (250 * height_scale), button_image_solid, loaded_hover_image_list, width_scale,
+                          'Choice 2', text_color=(20, 20, 20), button_text_padding=10)
 
     choice_btn_3 = Button((260 * width_scale),
-                          (320 * height_scale),
-                          'Choice 3', text_color=(20, 20, 20), button_text_padding=10,
-                          button_file_path='resources/button/button_hover_animation/14.png')
+                          (320 * height_scale), button_image_solid, loaded_hover_image_list, width_scale,
+                          'Choice 3', text_color=(20, 20, 20), button_text_padding=10)
 
     choice_btn_4 = Button((260 * width_scale),
-                          (390 * height_scale),
-                          'Choice 3', text_color=(20, 20, 20), button_text_padding=10,
-                          button_file_path='resources/button/button_hover_animation/14.png')
+                          (390 * height_scale), button_image_solid, loaded_hover_image_list, width_scale,
+                          'Choice 3', text_color=(20, 20, 20), button_text_padding=10)
 
     # Create character objects
     character = Character(screen_width // 2, screen_height // 2, screen_width, screen_height)
     chasing_character = Character(screen_width // 3, screen_height // 3, screen_width, screen_height, enemy=True)
 
     # Initialize miscellaneous operators, checkers, lists
-    pigeon_money_taken = False
-    camel_blue_received = False
     last_enemy_creation_time = datetime.datetime.now()
     enemies = [chasing_character]
+    random_number_generator = None
 
     # Initialize GameState class for handling different game_states
     game_state_object = GameState(screen, settings, background_manager,
-                                  background_manager_loading, text_btn, multi_text_btn,
+                                  background_manager_loading, text_btn,
                                   username_input_box, username_ask_btn, choice_btn_1,
                                   choice_btn_2, choice_btn_3, choice_btn_4, user_name)
 
     running = True
 
     while running:
-        random_number_generator = randint(1, 10)
         choice_made = False
+
+        if game_state == GameStateName.LAIPTINE_SCENE_2:
+            random_number_generator = randint(1, 10)
 
         if game_state == GameStateName.WORLD_MOVEMENT or GameStateName.NIGHTMARE_WORLD_MOVEMENT:
             keys = pygame.key.get_pressed()
@@ -163,8 +152,8 @@ def start(screen, clock, settings, background_manager_loading, background_manage
                                                      (30, 80)):
                     text_btn.text_box_appear(screen)
                     text_btn.update_text('')
-                    multi_text_btn.render_multiline_text('Would you like to Enter the Store?\n"Press "Y" to Enter',
-                                                         screen)
+                    text_btn.render_multiline_text('Would you like to Enter the Store?\n"Press "Y" to Enter',
+                                                   screen)
                     keys = pygame.key.get_pressed()
                     if keys[pygame.K_y]:
                         game_state = GameStateName.STORE_SCENE_1
@@ -176,8 +165,8 @@ def start(screen, clock, settings, background_manager_loading, background_manage
                                                      (270, 320)):
                     text_btn.text_box_appear(screen)
                     text_btn.update_text('')
-                    multi_text_btn.render_multiline_text('Go back home?\n"Press "Y" to Enter"',
-                                                         screen)
+                    text_btn.render_multiline_text('Go back home?\n"Press "Y" to Enter"',
+                                                   screen)
                     keys = pygame.key.get_pressed()
                     if keys[pygame.K_y]:
                         game_state = GameStateName.NARVELIS_SCENE_23
@@ -220,9 +209,9 @@ def start(screen, clock, settings, background_manager_loading, background_manage
                                                      (30, 80)):
                     text_btn.text_box_appear(screen)
                     text_btn.update_text('')
-                    multi_text_btn.render_multiline_text('Would you like to SAVE YOURSELF NOW?\n'
-                                                         'Press "Y" to YES YES YES PLEASE',
-                                                         screen)
+                    text_btn.render_multiline_text('Would you like to SAVE YOURSELF NOW?\n'
+                                                   'Press "Y" to YES YES YES PLEASE SO SPOOKY',
+                                                   screen)
                     keys = pygame.key.get_pressed()
                     if keys[pygame.K_y]:
                         game_state = GameStateName.BEDROOM_SCENE_12
@@ -242,12 +231,19 @@ def start(screen, clock, settings, background_manager_loading, background_manage
 
             # Main Button clicks (save, load, menu)
             if save_btn.is_clicked(event):
-                savestate.save_game(f"{game_state}", user_name)
+                savestate.save_game(f"{game_state}", user_name, items=items)
             if load_btn.is_clicked(event):
-                last_gamestate, last_player_name = savestate.get_last_save()
+                last_gamestate, last_player_name, _items = savestate.get_last_save()
+                items = []
+                for item in _items:
+                    for deeper_item_because_theres_a_tuple_inside_as_well_lol in item:
+                        items.append(deeper_item_because_theres_a_tuple_inside_as_well_lol)
+                print(items)
                 if last_gamestate and last_player_name:
-                    start(screen, clock, settings, background_manager_loading, background_manager,
-                          save_state=last_gamestate, player_name=last_player_name)
+                    start(screen, clock, settings, background_manager_loading, background_manager, button_image,
+                          button_image_solid,
+                          loaded_hover_image_list,
+                          save_state=last_gamestate, player_name=last_player_name, items=items)
                     return
             if menu_btn.is_clicked(event):
                 return
@@ -259,29 +255,24 @@ def start(screen, clock, settings, background_manager_loading, background_manage
                     game_state = GameStateName.MENU
 
             # Game state specific choice button handling
-            choice_made, game_state, pigeon_money_taken, camel_blue_received = game_state_object.handle_choice_button_game_states(
+            choice_made, game_state, items = game_state_object.handle_choice_button_game_states(
                 game_state, event, choice_made,
-                pigeon_money_taken,
-                camel_blue_received,
+                items,
                 character)
 
             # Space or Mouse click events for advancing the game state
             if not choice_made and (event.type == pygame.MOUSEBUTTONDOWN or (
                     event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE)):
-                game_state, user_name, camel_blue_received, pigeon_money_taken = game_state_object.handle_game_state(
-                    game_state, random_number_generator, user_name, character, camel_blue_received, pigeon_money_taken)
-                if game_state is None and user_name is None and camel_blue_received is None and pigeon_money_taken is None:
+                game_state, user_name, items = game_state_object.handle_game_state(
+                    game_state, random_number_generator, user_name, character, items)
+                if game_state is None and user_name is None:
                     return
 
-                    # Screen drawing based on game state
-        game_state_object.handle_game_state_drawing(game_state)
+        # Screen drawing based on game state
+        game_state_object.handle_game_state_drawing(game_state, items)
 
         # Update the display, continously draw save, load, menu buttons and check their hovers
-        if game_state == GameStateName.BALCONY_SCENE_8:
-            if not pigeon_money_taken:
-                choice_btn_4.draw(screen)
-                choice_btn_4.check_hover(screen)
-        background_manager.draw_filter(screen)
+        # background_manager.draw_filter(screen)
         if not game_state == GameStateName.GAME_OVER or not game_state == GameStateName.GAME_COMPLETED:
             save_btn.draw(screen)
             load_btn.draw(screen)

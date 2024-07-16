@@ -6,19 +6,18 @@ functionality of pygame buttons.
 """
 
 import pygame
-from ui.constants import FONT_PATH, BUTTON_FILE_PATH
+from ui.constants import FONT_PATH
 
 
 class Button:
     """Button class - responsible for the creation, drawing, and functionality of buttons."""
 
-    def __init__(self, x, y,
-                 text='',
-                 max_font_size=24,
+    def __init__(self, x, y, button_image,
+                 loaded_hover_image_list, screen_scale, text='',
+                 max_font_size=20,
                  scroll=False,
                  button_text_box_size=(0, 0),
                  button_text_padding=120,
-                 button_file_path=BUTTON_FILE_PATH + 'menu_button.png',
                  font_path=FONT_PATH,
                  button_size=(300, 50),
                  text_color=(255, 255, 255)):
@@ -26,12 +25,14 @@ class Button:
         self.button_size = button_size
         self.button_text_box_size = button_text_box_size
         self.button_text_padding = button_text_padding
-        self.button_image = pygame.image.load(button_file_path).convert_alpha()
+        self.button_image = button_image
+        self.loaded_hover_image_list = loaded_hover_image_list
         self.image = pygame.transform.scale(self.button_image, self.button_size)
         self.rect = self.image.get_rect(topleft=(x, y))
-        self.max_font_size = max_font_size
+        self.max_font_size = max_font_size * int(screen_scale)
         self.text = text
-        self.font = pygame.font.Font(font_path, self.max_font_size)
+        self.font_path = font_path
+        self.font = pygame.font.Font(self.font_path, self.max_font_size)
         self.text_surf, self.text_rect = self.update_text(self.text)
         self.button_sound = pygame.mixer.Sound('resources/audio/button_press.wav')
         self.scroll = scroll
@@ -53,10 +54,8 @@ class Button:
         """Check if the mouse is hovering over the button and change the image accordingly."""
         max_hover_button_file_index = 18
         if self.rect.collidepoint(pygame.mouse.get_pos()):
-            filename = f"{self.hover_button_file_counter}.png"
-            hover_image_load = pygame.image.load(
-                BUTTON_FILE_PATH + 'button_hover_animation/' + filename).convert_alpha()
-            hover_image = pygame.transform.scale(hover_image_load, self.button_size)
+            hover_image = pygame.transform.scale(self.loaded_hover_image_list[self.hover_button_file_counter - 1],
+                                                 self.button_size)
             screen.blit(hover_image, self.rect)
             if not self.go_back:
                 self.hover_button_file_counter += 1
@@ -87,19 +86,35 @@ class Button:
         image_load = pygame.image.load(file_path + filename).convert_alpha()
         image = pygame.transform.scale(image_load, self.button_size)
         screen.blit(image, self.rect)
-        screen.blit(self.text_surf, self.text_rect)
+        if self.hover_button_file_counter >= max_index - 3:  # the last index, where we can reliably add text to it
+            screen.blit(self.text_surf, self.text_rect)
 
     def update_text(self, text: str):
         """Update the text and adjust font size if the text is too long."""
         self.text = text
         font_size = self.max_font_size
+        self.font = pygame.font.Font(self.font_path, font_size)
         text_surf = self.font.render(self.text, True, self.text_color)
 
         # Decrease font size until the text fits the button width
-        while text_surf.get_width() > self.rect.width - self.button_text_padding:
+        min_font_size = 10  # Define a minimum font size to prevent it from becoming too small
+        while text_surf.get_width() > self.rect.width - self.button_text_padding and font_size > min_font_size:
             font_size -= 1
-            self.font = pygame.font.Font(FONT_PATH, font_size)
+            self.font = pygame.font.Font(self.font_path, font_size)
             text_surf = self.font.render(self.text, True, self.text_color)
+
+        # Increase font size until the text fits perfectly the button width
+        while text_surf.get_width() < self.rect.width - self.button_text_padding and font_size < self.max_font_size:
+            font_size += 1
+            self.font = pygame.font.Font(self.font_path, font_size)
+            text_surf = self.font.render(self.text, True, self.text_color)
+
+            # Break the loop if the font size exceeds the max font size or fits perfectly
+            if text_surf.get_width() > self.rect.width - self.button_text_padding:
+                font_size -= 1
+                self.font = pygame.font.Font(self.font_path, font_size)
+                text_surf = self.font.render(self.text, True, self.text_color)
+                break
 
         # Define the text_rect with the new size and center it on the button
         text_rect = text_surf.get_rect(center=self.rect.center)
@@ -113,6 +128,8 @@ class Button:
         word_height = None
         space_width, space_height = self.font.size(' ')
         x, y = self.rect.topleft
+        x += 60
+        y += 40
         max_width, max_height = self.rect.size
 
         for line in words:
@@ -120,11 +137,12 @@ class Button:
                 word_surface = self.font.render(word, True, color)
                 word_width, word_height = word_surface.get_size()
                 if x + word_width >= max_width:
-                    x = self.rect.left
+                    x = self.rect.left + 60
                     y += word_height * line_spacing
-                screen.blit(word_surface, (x, y))
+                if self.hover_button_file_counter >= 11:
+                    screen.blit(word_surface, (x, y))
                 x += word_width + space_width
-            x = self.rect.left
+            x = self.rect.left + 60
             y += word_height * line_spacing
 
     def reset_animation(self):

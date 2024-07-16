@@ -14,6 +14,7 @@ class Settings:
     def __init__(self):
         self.current_resolution_index = 0
         self.fullscreen = False
+        self.language = 'Lietuvių'
 
     @property
     def current_resolution(self) -> tuple:
@@ -40,3 +41,7 @@ class Settings:
     def toggle_fullscreen(self) -> None:
         """Toggles the fullscreen attribute between True and False."""
         self.fullscreen = not self.fullscreen
+
+    def change_language(self) -> None:
+        """Changes language"""
+        self.language = 'English' if self.language == 'Lietuvių' else 'Lietuvių'
