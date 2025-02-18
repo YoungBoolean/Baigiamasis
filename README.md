@@ -1,8 +1,6 @@
 # Koshmaras
 
-**Version 0.0.1**
-
-Koshmaras Game is an interactive game that guides the player through a series of immersive scenes, making choices that affect the game's outcome.
+Koshmaras is an interactive game that guides the player through a series of immersive scenes, making choices that affect the game's outcome.
 
 ## Game Genre
 - Story-based
@@ -12,7 +10,7 @@ Koshmaras Game is an interactive game that guides the player through a series of
 - Multiple-choice
 
 ## About the Game
-The game was written in Python using the pygame library. It also uses SQLAlchemy to store user save data in a database. At this moment, it serves as a demo to showcase its functionality and to demonstrate the creator's coding skills.
+The game was written in Python using the pygame library. It also uses SQLAlchemy to store user save data in a database. At this moment, it serves as a demo to showcase its functionality.
 
 ## Features
 - **Immersive Storyline**: Follow a gripping narrative that unfolds based on the choices you make.
